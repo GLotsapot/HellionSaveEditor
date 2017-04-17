@@ -230,6 +230,7 @@ namespace HellionSaveEditor
                     Console.WriteLine("3. Fill Resources");
                     Console.WriteLine("4. Fix Parts");
                     Console.WriteLine("5. Fix Room Air");
+                    Console.WriteLine("6. Fix Entire Outpost (runs 3,4,5 to and Outpost ship and every child ship");
                 }
                 Console.WriteLine("Q. Quit.");
                 var MenuResponse = Console.ReadKey(true);
@@ -250,6 +251,9 @@ namespace HellionSaveEditor
                         break;
                     case ConsoleKey.D5:
                         ShipRoomsAir(shipJson);
+                        break;
+                    case ConsoleKey.D6:
+                        ShipOutpostFix(shipJson);
                         break;
                     case ConsoleKey.Q:
                         return;
@@ -293,6 +297,23 @@ namespace HellionSaveEditor
                 Console.WriteLine("Ship Not Found!!!");
             }
             return ship;
+        }
+
+        /// <summary>
+        /// This will fix the air pressure, air quality, parts, and resourcs tanks of all connected objects.
+        /// </summary>
+        /// <param name="parentShip">The parent ship that everything attaches to. Usually an Outpost.</param>
+        private static void ShipOutpostFix(JObject parentShip)
+        {
+            Console.WriteLine("-- Fixing Room {0} --", parentShip["Name"].Value<string>());
+            
+            ShipRoomsAir(parentShip);
+            ShipResourceTanksFill(parentShip);
+            ShipDynamicObjectsFix(parentShip);
+
+            // Get ships that are docked to this ship, and repeat
+            var childrenShips = saveData["Ships"].Children<JObject>().Where(o => o["DockedToShipGUID"].Value<string>() == parentShip["GUID"].Value<string>());
+            foreach (JObject childShip in childrenShips) { ShipOutpostFix(childShip); }
         }
 
         /// <summary>
