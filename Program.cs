@@ -231,6 +231,7 @@ namespace HellionSaveEditor
                     Console.WriteLine("4. Fix Parts");
                     Console.WriteLine("5. Fix Room Air");
                     Console.WriteLine("6. Fix Entire Outpost (runs 3,4,5 to and Outpost ship and every child ship");
+                    Console.WriteLine("7. Rename Ship");
                 }
                 Console.WriteLine("Q. Quit.");
                 var MenuResponse = Console.ReadKey(true);
@@ -254,6 +255,11 @@ namespace HellionSaveEditor
                         break;
                     case ConsoleKey.D6:
                         ShipOutpostFix(shipJson);
+                        break;
+                    case ConsoleKey.D7:
+                        Console.WriteLine("What would you like to rename your ship?");
+                        string shipName = Console.ReadLine();
+                        ShipRename(shipJson, shipName);
                         break;
                     case ConsoleKey.Q:
                         return;
@@ -297,6 +303,18 @@ namespace HellionSaveEditor
                 Console.WriteLine("Ship Not Found!!!");
             }
             return ship;
+        }
+
+        /// <summary>
+        /// Change the name of your ship
+        /// </summary>
+        /// <param name="ship">The ship reference you wish to fix items for</param>
+        /// <param name="shipName">What you want to rename you ship to</param>
+        private static void ShipRename(JObject ship, string shipName)
+        {
+            Console.WriteLine();
+            Console.WriteLine("Renaming ship {0} to {1}", ship["Name"], shipName);
+            ship["Name"] = shipName;
         }
 
         /// <summary>
