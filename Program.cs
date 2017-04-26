@@ -225,7 +225,8 @@ namespace HellionSaveEditor
                 Console.WriteLine();
                 Console.WriteLine("1. List Ships");
                 Console.WriteLine("2. Select My Ship");
-                if(shipJson != null)
+                Console.WriteLine("9. Remove bad components from all ships");
+                if (shipJson != null)
                 {
                     Console.WriteLine("3. Fill Resources");
                     Console.WriteLine("4. Fix Parts");
@@ -266,6 +267,11 @@ namespace HellionSaveEditor
                         Console.WriteLine("What is the requested removal percentage?");
                         var removalPercentage = Convert.ToInt16(Console.ReadLine()) / 100.0;
                         ShipRemoveBadComponents(shipJson, removalPercentage);
+                        break;
+                    case ConsoleKey.D9:
+                        Console.WriteLine("What is the requested removal percentage?");
+                        var removalPercentageAll = Convert.ToInt16(Console.ReadLine()) / 100.0;
+                        ShipRemoveBadComponents(removalPercentageAll);
                         break;
                     case ConsoleKey.Q:
                         return;
@@ -325,7 +331,7 @@ namespace HellionSaveEditor
             }
             else
             {
-                Console.WriteLine("Removing parts with health lower than {0:P}", removalPercentage);
+                Console.WriteLine("Removing parts with health lower than {0:P} from {1}", removalPercentage, ship["Name"]);
             }
 
             var partObjects = from po in ship["DynamicObjects"]
@@ -341,9 +347,23 @@ namespace HellionSaveEditor
 
                 if (partHealth < removalPercentage)
                 {
-                    Console.WriteLine("- Removing Part");
+                    Console.WriteLine("-- Removing Part");
                     po.Remove();
                 }
+            }
+        }
+
+        /// <summary>
+        /// Remove components from all ships if it's health is below a percentage
+        /// </summary>
+        /// <param name="removalPercentage">The decimal percentage barrier to remove</param>
+        private static void ShipRemoveBadComponents(double removalPercentage)
+        {
+            var ships = saveData["Ships"].Children<JObject>();
+
+            foreach (var ship in ships)
+            {
+                ShipRemoveBadComponents(ship, removalPercentage);
             }
         }
 
