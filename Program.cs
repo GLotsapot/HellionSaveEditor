@@ -232,6 +232,7 @@ namespace HellionSaveEditor
                     Console.WriteLine("5. Fix Room Air");
                     Console.WriteLine("6. Fix Entire Outpost (runs 3,4,5 to and Outpost ship and every child ship");
                     Console.WriteLine("7. Rename Ship");
+                    Console.WriteLine("8. Remove bad components");
                 }
                 Console.WriteLine("Q. Quit.");
                 var MenuResponse = Console.ReadKey(true);
@@ -260,6 +261,11 @@ namespace HellionSaveEditor
                         Console.WriteLine("What would you like to rename your ship?");
                         string shipName = Console.ReadLine();
                         ShipRename(shipJson, shipName);
+                        break;
+                    case ConsoleKey.D8:
+                        Console.WriteLine("What is the requested removal percentage?");
+                        var removalPercentage = Convert.ToInt16(Console.ReadLine()) / 100.0;
+                        ShipRemoveBadComponents(shipJson, removalPercentage);
                         break;
                     case ConsoleKey.Q:
                         return;
@@ -303,6 +309,42 @@ namespace HellionSaveEditor
                 Console.WriteLine("Ship Not Found!!!");
             }
             return ship;
+        }
+
+        /// <summary>
+        /// Remove components from a ship if it's health is below a percentage
+        /// </summary>
+        /// <param name="ship">The ship reference you wish to fix items for</param>
+        /// <param name="removalPercentage">The decimal percentage barrier to remove</param>
+        private static void ShipRemoveBadComponents(JObject ship, double removalPercentage)
+        {
+            if (removalPercentage > 1)
+            {
+                Console.WriteLine("Percentage cannot be above 100%");
+                return;
+            }
+            else
+            {
+                Console.WriteLine("Removing parts with health lower than {0:P}", removalPercentage);
+            }
+
+            var partObjects = from po in ship["DynamicObjects"]
+                              where po["PartData"] != null
+                              select po;
+
+            
+            // NOTE: We have to do this in reverse, as doing it foward and removing causes an Exception
+            foreach (var po in partObjects.Reverse())
+            {
+                double partHealth = po["PartData"]["Health"].Value<double>() / po["PartData"]["MaxHealth"].Value<double>();
+                Console.WriteLine("- Part {0}: Health {1:P}", po["GUID"], partHealth);
+
+                if (partHealth < removalPercentage)
+                {
+                    Console.WriteLine("- Removing Part");
+                    po.Remove();
+                }
+            }
         }
 
         /// <summary>
