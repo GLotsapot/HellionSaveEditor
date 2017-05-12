@@ -17,6 +17,13 @@ namespace HellionSaveEditor
         static void Main(string[] args)
         {
             string saveFileName = LoadLastSave(@"..\");
+            if (saveFileName == null)
+            {
+                Console.WriteLine("No save file found on the local system. Please ensure that you have this program in the correct directory.");
+                Console.WriteLine("Please check the wiki for instructions. https://github.com/GLotsapot/HellionSaveEditor/wiki");
+                Console.ReadKey();
+                Environment.Exit(0);
+            }
 
             MenuMain();
 
@@ -80,7 +87,6 @@ namespace HellionSaveEditor
             }
             else
             {
-                Console.WriteLine("Could not find any save games to edit.");
                 return null;
             }
             
