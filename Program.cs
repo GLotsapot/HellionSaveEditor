@@ -294,12 +294,12 @@ namespace HellionSaveEditor
             //var ships = saveData["Ships"].Children<JObject>().Where(n => n["Name"].Value<string>() == shipFilter);
 
             var ships = from s in saveData["Ships"]
-                        where s["Name"].Value<string>().Contains(shipFilter)
+                        where s["Registration"].Value<string>().Contains(shipFilter) || s["Name"].Value<string>().Contains(shipFilter)
                         select s;
 
             foreach (var ship in ships)
             {
-                Console.WriteLine(ship["Name"].Value<string>());
+                Console.WriteLine("{0} (aka {1})", ship["Registration"].Value<string>(), ship["Name"].Value<string>());
             }
         }
 
@@ -311,7 +311,7 @@ namespace HellionSaveEditor
 
             Console.Write("Searching... ");
 
-            JObject ship = saveData["Ships"].Children<JObject>().FirstOrDefault(o => o["Name"].ToString() == shipName);
+            JObject ship = saveData["Ships"].Children<JObject>().Where(o => o["Registration"].Value<string>() == shipName || o["Name"].Value<string>() == shipName).FirstOrDefault(); //FirstOrDefault(o => o["Name"].ToString() == shipName);
             if (ship != null)
             {
                 Console.WriteLine("Ship Found! GUID: {0}", ship["GUID"].Value<string>());
@@ -391,7 +391,7 @@ namespace HellionSaveEditor
         /// <param name="parentShip">The parent ship that everything attaches to. Usually an Outpost.</param>
         private static void ShipOutpostFix(JObject parentShip)
         {
-            Console.WriteLine("-- Fixing Room {0} --", parentShip["Name"].Value<string>());
+            Console.WriteLine("-- Fixing Room {0} ({0}) --", parentShip["Registration"].Value<string>(), parentShip["Name"].Value<string>());
             
             ShipRoomsAir(parentShip);
             ShipResourceTanksFill(parentShip);
