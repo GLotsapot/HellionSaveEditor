@@ -398,7 +398,8 @@ namespace HellionSaveEditor
             ShipDynamicObjectsFix(parentShip);
 
             // Get ships that are docked to this ship, and repeat
-            var childrenShips = saveData["Ships"].Children<JObject>().Where(o => o["DockedToShipGUID"].Value<string>() == parentShip["GUID"].Value<string>());
+            var childrenShips = saveData["Ships"].Children<JObject>().Where(o => o["DockedToShipGUID"] != null).Where(o => o["DockedToShipGUID"].Value<Int64>() == parentShip["GUID"].Value<Int64>());
+
             foreach (JObject childShip in childrenShips) { ShipOutpostFix(childShip); }
         }
 
