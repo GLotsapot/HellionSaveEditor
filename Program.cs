@@ -488,11 +488,16 @@ namespace HellionSaveEditor
             var rpObjects = from rp in ship["RepairPoints"]
                             select rp;
 
+            int totalHealth = 0;
             foreach(var rp in rpObjects)
             {
                 Console.WriteLine("- Changing {0} to {1}", rp["Health"], rp["MaxHealth"]);
                 rp["Health"] = rp["MaxHealth"];
+                totalHealth = totalHealth + rp["MaxHealth"].ToObject<int>();
             }
+
+            ship["Health"] = totalHealth;
+            Console.WriteLine("-- Total ship health changed to {0}", totalHealth);
         }
 
         #endregion
