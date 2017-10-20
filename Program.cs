@@ -240,6 +240,8 @@ namespace HellionSaveEditor
                     Console.WriteLine("6. Fix Entire Outpost (runs 3,4,5 to and Outpost ship and every child ship");
                     Console.WriteLine("7. Rename Ship");
                     Console.WriteLine("8. Remove bad components");
+                    Console.WriteLine("9. Unlock doors");
+                    Console.WriteLine("A. Fix Repair Points");
                 }
                 Console.WriteLine("Q. Quit.");
                 var MenuResponse = Console.ReadKey(true);
@@ -275,9 +277,10 @@ namespace HellionSaveEditor
                         ShipRemoveBadComponents(shipJson, removalPercentage);
                         break;
                     case ConsoleKey.D9:
-                        Console.WriteLine("What is the requested removal percentage?");
-                        var removalPercentageAll = Convert.ToInt16(Console.ReadLine()) / 100.0;
-                        ShipRemoveBadComponents(removalPercentageAll);
+                        ShipDoorsUnlock(shipJson);
+                        break;
+                    case ConsoleKey.A:
+                        ShipRepairPointsFix(shipJson);
                         break;
                     case ConsoleKey.Q:
                         return;
@@ -409,7 +412,8 @@ namespace HellionSaveEditor
         /// <param name="ship">The ship reference you wish to fix items for</param>
         private static void ShipDynamicObjectsFix(JObject ship)
         {
-            // throw new NotImplementedException();
+            Console.WriteLine();
+            Console.WriteLine("Fixing Dynamic Objects");
 
             var partObjects = from po in ship["DynamicObjects"]
                               where po["PartData"] != null
@@ -452,6 +456,42 @@ namespace HellionSaveEditor
                 Console.WriteLine("- AP:{0} AQ:{1}", room["AirPressure"], room["AirQuality"]);
                 room["AirPressure"] = 1.0;
                 room["AirQuality"] = 1.0;
+            }
+        }
+
+        /// <summary>
+        /// Sets all the doors on the ship to unlocked
+        /// </summary>
+        /// <param name="ship">The ship reference you wish to unlock doors on</param>
+        private static void ShipDoorsUnlock(JObject ship)
+        {
+            Console.WriteLine();
+            Console.WriteLine("Unlocking doors - Currently not implemented");
+            return;
+
+            foreach (var door in ship["Doors"].Children<JObject>().Where(o => o["IsLocked"].Value<bool>() == true))
+            {
+                Console.WriteLine("Unlocking door with skeleton key");
+                door["IsLocked"] = false;
+            }
+        }
+
+        /// <summary>
+        /// Goes through each Repair Point and changes it's Health to match MaxHealth
+        /// </summary>
+        /// <param name="ship">The ship reference you wish to unlock doors on</param>
+        private static void ShipRepairPointsFix(JObject ship)
+        {
+            Console.WriteLine();
+            Console.WriteLine("Fixing Parts");
+
+            var rpObjects = from rp in ship["RepairPoints"]
+                            select rp;
+
+            foreach(var rp in rpObjects)
+            {
+                Console.WriteLine("- Changing {0} to {1}", rp["Health"], rp["MaxHealth"]);
+                rp["Health"] = rp["MaxHealth"];
             }
         }
 
