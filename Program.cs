@@ -39,6 +39,22 @@ namespace HellionSaveEditor
             }
         }
 
+        /// <summary>
+        /// Prints out a message to the console using pretty colors.
+        /// </summary>
+        /// <param name="message">message to print out</param>
+        /// <param name="bg">Optional Background color</param>
+        /// <param name="fg">Optional Foreground color</param>
+        private static void ConsoleColor(string message, ConsoleColor bg = System.ConsoleColor.Blue, ConsoleColor fg = System.ConsoleColor.Yellow)
+        {
+            Console.BackgroundColor = bg;
+            Console.ForegroundColor = fg;
+
+            Console.WriteLine(message);
+
+            Console.ResetColor();
+        }
+
         private static void MenuMain()
         {
             while (true)
