@@ -19,7 +19,7 @@ namespace HellionSaveEditor
             string saveFileName = LoadLastSave(@"..\");
             if (saveFileName == null)
             {
-                Console.WriteLine("No save file found on the local system. Please ensure that you have this program in the correct directory.");
+                ConsoleColorLine("No save file found on the local system. Please ensure that you have this program in the correct directory.", ConsoleColor.Red);
                 Console.WriteLine("Please check the wiki for instructions. https://github.com/GLotsapot/HellionSaveEditor/wiki");
                 Console.ReadKey();
                 Environment.Exit(0);
@@ -28,7 +28,7 @@ namespace HellionSaveEditor
             MenuMain();
 
             Console.WriteLine();
-            Console.WriteLine("Would you like to save your changes? (y/n)");
+            ConsoleColorLine("Would you like to save your changes? (y/n)", ConsoleColor.DarkGreen);
             switch (Console.ReadKey().Key)
             {
                 case ConsoleKey.Y:
@@ -45,7 +45,7 @@ namespace HellionSaveEditor
         /// <param name="message">message to print out</param>
         /// <param name="bg">Optional Background color</param>
         /// <param name="fg">Optional Foreground color</param>
-        private static void ConsoleColor(string message, ConsoleColor bg = System.ConsoleColor.Blue, ConsoleColor fg = System.ConsoleColor.Yellow)
+        private static void ConsoleColorLine(string message, ConsoleColor bg = ConsoleColor.Blue, ConsoleColor fg = ConsoleColor.Yellow)
         {
             Console.BackgroundColor = bg;
             Console.ForegroundColor = fg;
@@ -60,7 +60,7 @@ namespace HellionSaveEditor
             while (true)
             {
                 Console.WriteLine();
-                Console.WriteLine("]|I{------» Hellion Save Editor «------}I|[");
+                ConsoleColorLine("]|I{------» Hellion Save Editor «------}I|[");
                 Console.WriteLine();
                 Console.WriteLine("1. Character Edit");
                 Console.WriteLine("2. Ship Edit");
@@ -155,7 +155,7 @@ namespace HellionSaveEditor
             while (true)
             {
                 Console.WriteLine();
-                Console.WriteLine("]|I{------» Character Editor «------}I|[");
+                ConsoleColorLine("]|I{------» Character Editor «------}I|[");
                 Console.WriteLine();
                 Console.WriteLine("1. List Character Names");
                 Console.WriteLine("2. Select My Character");
@@ -215,11 +215,11 @@ namespace HellionSaveEditor
             JObject player = saveData["Players"].Children<JObject>().FirstOrDefault(o => o["Name"].ToString() == characterName);
             if(player != null)
             {
-                Console.WriteLine("Character Found!");
+                ConsoleColorLine("Character Found!", ConsoleColor.DarkGreen);
             }
             else
             {
-                Console.WriteLine("Character Not Found!!!");
+                ConsoleColorLine("Character Not Found!!!", ConsoleColor.Red);
             }
             return player;
         }
@@ -243,21 +243,21 @@ namespace HellionSaveEditor
             while (true)
             {
                 Console.WriteLine();
-                Console.WriteLine("]|I{------» Ship Editor «------}I|[");
+                ConsoleColorLine("]|I{------» Ship Editor «------}I|[");
                 Console.WriteLine();
                 Console.WriteLine("1. List Ships");
                 Console.WriteLine("2. Select My Ship");
-                Console.WriteLine("9. Remove bad components from all ships");
+                Console.WriteLine("3. Remove bad components from all ships");
                 if (shipJson != null)
                 {
-                    Console.WriteLine("3. Fill Resources");
-                    Console.WriteLine("4. Fix Parts");
-                    Console.WriteLine("5. Fix Room Air");
-                    Console.WriteLine("6. Fix Entire Outpost (runs 3,4,5 to and Outpost ship and every child ship");
-                    Console.WriteLine("7. Rename Ship");
-                    Console.WriteLine("8. Remove bad components");
-                    Console.WriteLine("9. Unlock doors");
-                    Console.WriteLine("A. Fix Repair Points");
+                    Console.WriteLine("A. Fill Resources");
+                    Console.WriteLine("B. Fix Parts");
+                    Console.WriteLine("C. Fix Room Air");
+                    Console.WriteLine("D. Fix Entire Outpost (runs 3,4,5 to and Outpost ship and every child ship");
+                    Console.WriteLine("E. Rename Ship");
+                    Console.WriteLine("F. Remove bad components");
+                    Console.WriteLine("G. Unlock doors");
+                    Console.WriteLine("H. Fix Repair Points");
                 }
                 Console.WriteLine("Q. Quit.");
                 var MenuResponse = Console.ReadKey(true);
@@ -271,35 +271,42 @@ namespace HellionSaveEditor
                         shipJson = GetShip();
                         break;
                     case ConsoleKey.D3:
+                        //TODO: remove all bad components
+                        ConsoleColorLine("not implemented", ConsoleColor.Red);
+                        break;
+                    case ConsoleKey.A:
                         ShipResourceTanksFill(shipJson);
                         break;
-                    case ConsoleKey.D4:
+                    case ConsoleKey.B:
                         ShipDynamicObjectsFix(shipJson);
                         break;
-                    case ConsoleKey.D5:
+                    case ConsoleKey.C:
                         ShipRoomsAir(shipJson);
                         break;
-                    case ConsoleKey.D6:
+                    case ConsoleKey.D:
                         ShipOutpostFix(shipJson);
                         break;
-                    case ConsoleKey.D7:
+                    case ConsoleKey.E:
                         Console.WriteLine("What would you like to rename your ship?");
                         string shipName = Console.ReadLine();
                         ShipRename(shipJson, shipName);
                         break;
-                    case ConsoleKey.D8:
+                    case ConsoleKey.F:
                         Console.WriteLine("What is the requested removal percentage?");
                         var removalPercentage = Convert.ToInt16(Console.ReadLine()) / 100.0;
                         ShipRemoveBadComponents(shipJson, removalPercentage);
                         break;
-                    case ConsoleKey.D9:
+                    case ConsoleKey.G:
                         ShipDoorsUnlock(shipJson);
                         break;
-                    case ConsoleKey.A:
+                    case ConsoleKey.H:
                         ShipRepairPointsFix(shipJson);
                         break;
                     case ConsoleKey.Q:
                         return;
+                    default:
+                        ConsoleColorLine(string.Format("The {0} key is not valid.", MenuResponse.Key), ConsoleColor.Red);
+                        break;
                 }
             }
         }
@@ -333,11 +340,11 @@ namespace HellionSaveEditor
             JObject ship = saveData["Ships"].Children<JObject>().Where(o => o["Registration"].Value<string>() == shipName || o["Name"].Value<string>() == shipName).FirstOrDefault(); //FirstOrDefault(o => o["Name"].ToString() == shipName);
             if (ship != null)
             {
-                Console.WriteLine("Ship Found! GUID: {0}", ship["GUID"].Value<string>());
+                ConsoleColorLine(string.Format("Ship Found! GUID: {0}", ship["GUID"].Value<string>()), ConsoleColor.DarkGreen);
             }
             else
             {
-                Console.WriteLine("Ship Not Found!!!");
+                ConsoleColorLine("Ship Not Found!!!", ConsoleColor.Red);
             }
             return ship;
         }
@@ -351,7 +358,7 @@ namespace HellionSaveEditor
         {
             if (removalPercentage > 1)
             {
-                Console.WriteLine("Percentage cannot be above 100%");
+                ConsoleColorLine("Percentage cannot be above 100%", ConsoleColor.Red);
                 return;
             }
             else
@@ -410,7 +417,7 @@ namespace HellionSaveEditor
         /// <param name="parentShip">The parent ship that everything attaches to. Usually an Outpost.</param>
         private static void ShipOutpostFix(JObject parentShip)
         {
-            Console.WriteLine("-- Fixing Room {0} ({0}) --", parentShip["Registration"].Value<string>(), parentShip["Name"].Value<string>());
+            ConsoleColorLine(string.Format("-- Fixing Room {0} ({0}) --", parentShip["Registration"].Value<string>(), parentShip["Name"].Value<string>()), ConsoleColor.DarkGreen);
             
             ShipRoomsAir(parentShip);
             ShipResourceTanksFill(parentShip);
@@ -429,7 +436,7 @@ namespace HellionSaveEditor
         private static void ShipDynamicObjectsFix(JObject ship)
         {
             Console.WriteLine();
-            Console.WriteLine("Fixing Dynamic Objects");
+            ConsoleColorLine("Fixing Dynamic Objects", ConsoleColor.DarkBlue);
 
             var partObjects = from po in ship["DynamicObjects"]
                               where po["PartData"] != null
@@ -449,7 +456,7 @@ namespace HellionSaveEditor
         private static void ShipResourceTanksFill(JObject ship)
         {
             Console.WriteLine();
-            Console.WriteLine("Filling the tanks");
+            ConsoleColorLine("Filling Resource Tanks", ConsoleColor.DarkBlue);
 
             foreach (var resourceTank in ship["ResourceTanks"].Children<JObject>())
             {
@@ -466,6 +473,8 @@ namespace HellionSaveEditor
         private static void ShipRoomsAir(JObject ship)
         {
             Console.WriteLine();
+            ConsoleColorLine("Fixing Room Atmosphere", ConsoleColor.DarkBlue);
+
             foreach (var room in ship["Rooms"].Children<JObject>())
             {
                 Console.WriteLine("Changeing Room {0}", room["GUID"].Value<string>());
@@ -482,7 +491,8 @@ namespace HellionSaveEditor
         private static void ShipDoorsUnlock(JObject ship)
         {
             Console.WriteLine();
-            Console.WriteLine("Unlocking doors - Currently not implemented");
+            ConsoleColorLine("Unlocking doors", ConsoleColor.DarkBlue);
+            ConsoleColorLine(" - Currently not implemented", ConsoleColor.Red);
             return;
 
             foreach (var door in ship["Doors"].Children<JObject>().Where(o => o["IsLocked"].Value<bool>() == true))
@@ -499,7 +509,7 @@ namespace HellionSaveEditor
         private static void ShipRepairPointsFix(JObject ship)
         {
             Console.WriteLine();
-            Console.WriteLine("Fixing Parts");
+            ConsoleColorLine("Fixing Parts", ConsoleColor.DarkBlue);
 
             var rpObjects = from rp in ship["RepairPoints"]
                             select rp;
