@@ -253,7 +253,7 @@ namespace HellionSaveEditor
                     Console.WriteLine("A. Fill Resources");
                     Console.WriteLine("B. Fix Parts");
                     Console.WriteLine("C. Fix Room Air");
-                    Console.WriteLine("D. Fix Entire Outpost (runs 3,4,5 to and Outpost ship and every child ship");
+                    Console.WriteLine("D. Fix Entire Outpost (runs A,B,C,H to and Outpost ship and every child ship");
                     Console.WriteLine("E. Rename Ship");
                     Console.WriteLine("F. Remove bad components");
                     Console.WriteLine("G. Unlock doors");
@@ -272,6 +272,7 @@ namespace HellionSaveEditor
                         break;
                     case ConsoleKey.D3:
                         //TODO: remove all bad components
+                        //ShipRemoveBadComponents(25);
                         ConsoleColorLine("not implemented", ConsoleColor.Red);
                         break;
                     case ConsoleKey.A:
@@ -329,6 +330,10 @@ namespace HellionSaveEditor
             }
         }
 
+        /// <summary>
+        /// Find a ship with a specific name and return it
+        /// </summary>
+        /// <returns></returns>
         private static JObject GetShip()
         {
             Console.WriteLine();
@@ -382,6 +387,10 @@ namespace HellionSaveEditor
                     Console.WriteLine("-- Removing Part");
                     po.Remove();
                 }
+                else
+                {
+                    Console.WriteLine("-- Keeping Part");
+                }
             }
         }
 
@@ -391,6 +400,8 @@ namespace HellionSaveEditor
         /// <param name="removalPercentage">The decimal percentage barrier to remove</param>
         private static void ShipRemoveBadComponents(double removalPercentage)
         {
+            Console.WriteLine("Removing parts with health lower than {0:P} from all ships", removalPercentage);
+
             var ships = saveData["Ships"].Children<JObject>();
 
             foreach (var ship in ships)
@@ -417,11 +428,13 @@ namespace HellionSaveEditor
         /// <param name="parentShip">The parent ship that everything attaches to. Usually an Outpost.</param>
         private static void ShipOutpostFix(JObject parentShip)
         {
+            Console.WriteLine();
             ConsoleColorLine(string.Format("-- Fixing Room {0} ({0}) --", parentShip["Registration"].Value<string>(), parentShip["Name"].Value<string>()), ConsoleColor.DarkGreen);
             
             ShipRoomsAir(parentShip);
             ShipResourceTanksFill(parentShip);
             ShipDynamicObjectsFix(parentShip);
+            ShipRepairPointsFix(parentShip);
 
             // Get ships that are docked to this ship, and repeat
             var childrenShips = saveData["Ships"].Children<JObject>().Where(o => o["DockedToShipGUID"] != null).Where(o => o["DockedToShipGUID"].Value<Int64>() == parentShip["GUID"].Value<Int64>());
@@ -444,8 +457,12 @@ namespace HellionSaveEditor
 
             foreach (var po in partObjects)
             {
-                Console.WriteLine("- {0}: {1}", po["GUID"], po["PartData"]["Health"]);
-                po["PartData"]["Health"] = po["PartData"]["MaxHealth"];
+                Console.WriteLine("- GUID {0}: {1}", po["GUID"], po["PartData"]["Health"]);
+                if (po["PartData"]["Health"].Value<double>() != po["PartData"]["MaxHealth"].Value<double>())
+                {
+                    Console.WriteLine("-- Changing health to {0}", po["PartData"]["MaxHealth"]);
+                    po["PartData"]["Health"] = po["PartData"]["MaxHealth"];
+                }
             }
         }
 
@@ -461,8 +478,14 @@ namespace HellionSaveEditor
             foreach (var resourceTank in ship["ResourceTanks"].Children<JObject>())
             {
                 Console.WriteLine("- {0}: {1}", resourceTank["CargoCompartments"][0]["Name"], resourceTank["CargoCompartments"][0]["Resources"][0]["Quantity"]);
-                var capacity = resourceTank["CargoCompartments"][0]["Capacity"];
-                resourceTank["CargoCompartments"][0]["Resources"][0]["Quantity"] = capacity;
+
+                if(resourceTank["CargoCompartments"][0]["Resources"][0]["Quantity"].Value<double>() != resourceTank["CargoCompartments"][0]["Capacity"].Value<double>())
+                {
+                    var capacity = resourceTank["CargoCompartments"][0]["Capacity"];
+
+                    Console.WriteLine("-- Changing quantity to {0}", capacity);
+                    resourceTank["CargoCompartments"][0]["Resources"][0]["Quantity"] = capacity;
+                }
             }
         }
 
@@ -473,14 +496,22 @@ namespace HellionSaveEditor
         private static void ShipRoomsAir(JObject ship)
         {
             Console.WriteLine();
-            ConsoleColorLine("Fixing Room Atmosphere", ConsoleColor.DarkBlue);
+            ConsoleColorLine("Fixing Rooms Atmosphere", ConsoleColor.DarkBlue);
 
             foreach (var room in ship["Rooms"].Children<JObject>())
             {
                 Console.WriteLine("Changeing Room {0}", room["GUID"].Value<string>());
-                Console.WriteLine("- AP:{0} AQ:{1}", room["AirPressure"], room["AirQuality"]);
-                room["AirPressure"] = 1.0;
-                room["AirQuality"] = 1.0;
+                if(room["AirPressure"].Value<double>() != 1)
+                {
+                    Console.WriteLine("- AP changed from {0}", room["AirPressure"]);
+                    room["AirPressure"] = 1.0;
+                }
+
+                if (room["AirQuality"].Value<double>() != 1)
+                {
+                    Console.WriteLine("- AQ changed from {0}", room["AirQuality"]);
+                    room["AirQuality"] = 1.0;
+                }
             }
         }
 
@@ -509,7 +540,7 @@ namespace HellionSaveEditor
         private static void ShipRepairPointsFix(JObject ship)
         {
             Console.WriteLine();
-            ConsoleColorLine("Fixing Parts", ConsoleColor.DarkBlue);
+            ConsoleColorLine("Fixing Repair Points", ConsoleColor.DarkBlue);
 
             var rpObjects = from rp in ship["RepairPoints"]
                             select rp;
