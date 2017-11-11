@@ -130,7 +130,7 @@ namespace HellionSaveEditor
         /// <param name="saveFile">The full save path and name to save data to<</param>
         private static void WriteSave(string saveFile)
         {
-            System.IO.File.Move(saveFile, saveFile + ".backup");
+            System.IO.File.Move(saveFile, saveFile + "-" + DateTime.Now.ToString("yyyyMdhmmsss") + ".backup");
             using (StreamWriter sWriter = File.CreateText(saveFile))
             {
                 using (JsonTextWriter jWriter = new JsonTextWriter(sWriter))
