@@ -16,7 +16,30 @@ namespace HellionSaveEditor
 
         static void Main(string[] args)
         {
-            string saveFileName = LoadLastSave(@"..\");
+            string saveFileName = null;
+            if (args.Length == 0)
+            {
+                // No arguments passed, look for most recent save in parent folder
+                saveFileName = LoadLastSave(@"..\");
+            }
+            else
+            {
+                // Check to see if we were passed a file or folder
+                bool isFile = !System.IO.Directory.Exists(args[0]) &&
+                         System.IO.File.Exists(args[0]);
+
+                // Act accordingly
+                if (isFile)
+                {
+                    LoadSave(args[0]);
+                    saveFileName = args[0];
+                }
+                else
+                {
+                    saveFileName = LoadLastSave(args[0]);
+                }
+            }
+            
             if (saveFileName == null)
             {
                 ConsoleColorLine("No save file found on the local system. Please ensure that you have this program in the correct directory.", ConsoleColor.Red);
