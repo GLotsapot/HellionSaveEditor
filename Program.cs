@@ -20,7 +20,7 @@ namespace HellionSaveEditor
             if (args.Length == 0)
             {
                 // No arguments passed, look for most recent save in parent folder
-                saveFileName = LoadLastSave(@"..\");
+				saveFileName = LoadLastSave(Directory.GetParent(Directory.GetCurrentDirectory()).FullName);
             }
             else
             {
