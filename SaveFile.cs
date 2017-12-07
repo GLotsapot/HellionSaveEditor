@@ -51,6 +51,11 @@ namespace HellionSaveEditor
                 LoadSaveFile(FilePath);
                 IsLoaded = true;
             }
+            else
+            {
+                var errorMessage = String.Format("Cannot find the save file in folder: {0}", saveFolder);
+                throw new FileNotFoundException(errorMessage);
+            }
         }
 
         /// <summary>
@@ -65,7 +70,7 @@ namespace HellionSaveEditor
                 throw new FileNotFoundException(errorMessage);
             }
 
-            Console.WriteLine("Reading save file: {0}", saveFile);
+            //Console.WriteLine("Reading save file: {0}", saveFile);
             using (StreamReader file = File.OpenText(saveFile))
             {
                 using (JsonTextReader reader = new JsonTextReader(file))
@@ -89,7 +94,7 @@ namespace HellionSaveEditor
         {
             if (backup)
             {
-                System.IO.File.Move(FilePath, FilePath + "-" + DateTime.Now.ToString("yyyyMdhmmsss") + ".backup");
+                File.Move(FilePath, FilePath + "-" + DateTime.Now.ToString("yyyyMdhmmsss") + ".backup");
             }
             else
             {
