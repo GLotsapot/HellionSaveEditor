@@ -16,6 +16,36 @@ namespace HellionSaveEditor
 
         static void Main(string[] args)
         {
+            if (args.Length == 0)
+            {
+                // No arguments passed, look for most recent save in parent folder
+                SaveFile.LoadLatestSaveFile(Directory.GetParent(Directory.GetCurrentDirectory()).FullName);
+            }
+            else
+            {
+                SaveFile.LoadSaveFile(args[0]);
+            }
+            Console.WriteLine("Loaded save file: {0}", SaveFile.FilePath);
+
+            MenuMain();
+
+            Console.WriteLine();
+            ConsoleColorLine("Would you like to save your changes? [o]verwrite, [b]ackup, [n]o {default}", ConsoleColor.DarkGreen);
+            switch (Console.ReadKey().Key)
+            {
+                case ConsoleKey.O:
+                    SaveFile.WriteSave(false);
+                    break;
+                case ConsoleKey.B:
+                    SaveFile.WriteSave();
+                    break;
+                default:
+                    break;
+            }
+        }
+
+        static void Main2(string[] args)
+        {
             string saveFileName = null;
             if (args.Length == 0)
             {
