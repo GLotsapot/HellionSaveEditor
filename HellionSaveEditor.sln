@@ -3,7 +3,7 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 2012
 VisualStudioVersion = 14.0.25420.1
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HellionSaveEditor", "HellionSaveEditor.csproj", "{30D0AE60-12E2-4FED-804E-880ECBD3344C}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HellionSaveEditor", "HellionSaveEditor\HellionSaveEditor.csproj", "{30D0AE60-12E2-4FED-804E-880ECBD3344C}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
