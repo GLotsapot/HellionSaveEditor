@@ -16,7 +16,7 @@ namespace HellionData
         #region Fields
 
         /// <summary>
-        /// Holds the entire saveFileJson
+        /// Holds the entire Save File Json
         /// </summary>
         private static JObject saveData;
 
@@ -24,6 +24,10 @@ namespace HellionData
 
         #region Properties
 
+		/// <summary>
+		/// Gets a value indicating if the save file has been loaded.
+		/// </summary>
+		/// <value><c>true</c> if is loaded; otherwise, <c>false</c>.</value>
         static public bool IsLoaded { get; private set; }
 
         /// <summary>
@@ -40,16 +44,14 @@ namespace HellionData
         /// This is usually the latest save game, but can be used to force a specific save to load instead
         /// </summary>
         /// <param name="saveFolder">The folder to search for the latest .save file</param>
-        /// <returns>The path to the file that was loaded. If no save found, returns null.</returns>
         static public void LoadLatestSaveFile(string saveFolder)
         {
             var files = new System.IO.DirectoryInfo(saveFolder).GetFileSystemInfos("*.save").OrderBy(f => f.LastWriteTime);
 
             if (files.Count() != 0)
             {
-                FilePath = files.Last().FullName;
-                LoadSaveFile(FilePath);
-                IsLoaded = true;
+                var filePath = files.Last().FullName;
+				LoadSaveFile(filePath);
             }
             else
             {
@@ -59,9 +61,9 @@ namespace HellionData
         }
 
         /// <summary>
-        /// 
+        /// Read the specific save file into memory
         /// </summary>
-        /// <param name="saveFile"></param>
+        /// <param name="saveFile">The full file path of the save file</param>
         static public void LoadSaveFile(string saveFile)
         {
             if (!File.Exists(saveFile))
@@ -76,6 +78,8 @@ namespace HellionData
                 using (JsonTextReader reader = new JsonTextReader(file))
                 {
                     saveData = (JObject)JToken.ReadFrom(reader);
+					FilePath = saveFile;
+					IsLoaded = true;
                 }
             }
         }
