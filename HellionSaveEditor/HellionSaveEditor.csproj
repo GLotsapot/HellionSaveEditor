@@ -77,13 +77,8 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Player.cs" />
-    <Compile Include="Players.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="SaveFile.cs" />
-    <Compile Include="Ship.cs" />
-    <Compile Include="Ships.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
