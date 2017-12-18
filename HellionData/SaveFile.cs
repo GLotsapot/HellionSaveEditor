@@ -9,9 +9,9 @@ using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
 
-namespace HellionSaveEditor
+namespace HellionData
 {
-    static class SaveFile
+    public static class SaveFile
     {
         #region Fields
 
