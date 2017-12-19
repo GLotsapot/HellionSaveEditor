@@ -18,16 +18,16 @@ namespace HellionData
         /// <summary>
         /// Holds the entire Save File Json
         /// </summary>
-        private static JObject saveData;
+        internal static JObject saveData;
 
         #endregion
 
         #region Properties
 
-		/// <summary>
-		/// Gets a value indicating if the save file has been loaded.
-		/// </summary>
-		/// <value><c>true</c> if is loaded; otherwise, <c>false</c>.</value>
+        /// <summary>
+        /// Gets a value indicating if the save file has been loaded.
+        /// </summary>
+        /// <value><c>true</c> if is loaded; otherwise, <c>false</c>.</value>
         static public bool IsLoaded { get; private set; }
 
         /// <summary>
