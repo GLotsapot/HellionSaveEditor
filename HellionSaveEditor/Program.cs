@@ -182,7 +182,7 @@ namespace HellionSaveEditor
 
         private static void MenuShip()
         {
-            JObject shipJson = null;
+			Ship selectedShip = null;
 
             while (true)
             {
@@ -192,7 +192,7 @@ namespace HellionSaveEditor
                 Console.WriteLine("1. List Ships");
                 Console.WriteLine("2. Select My Ship");
                 Console.WriteLine("3. Remove bad components from all ships");
-                if (shipJson != null)
+				if (selectedShip != null)
                 {
                     Console.WriteLine("A. Fill Resources");
                     Console.WriteLine("B. Fix Parts");
@@ -212,40 +212,49 @@ namespace HellionSaveEditor
                         ListShips();
                         break;
                     case ConsoleKey.D2:
-                        shipJson = GetShip();
+						selectedShip = GetShip(); //TODO: reference the ship to edit
                         break;
                     case ConsoleKey.D3:
                         //TODO: remove all bad components
                         //ShipRemoveBadComponents(25);
                         ConsoleColorLine("not implemented", ConsoleColor.Red);
                         break;
-                    case ConsoleKey.A:
-                        ShipResourceTanksFill(shipJson);
+					case ConsoleKey.A:
+						//ShipResourceTanksFill (shipJson);
+						selectedShip.ResourceTanksFill();
                         break;
-                    case ConsoleKey.B:
-                        ShipDynamicObjectsFix(shipJson);
+					case ConsoleKey.B:
+						//ShipDynamicObjectsFix(shipJson);
+						selectedShip.DynamicObjectsFix ();
                         break;
-                    case ConsoleKey.C:
-                        ShipRoomsAir(shipJson);
+					case ConsoleKey.C:
+						//ShipRoomsAir(shipJson);
+						selectedShip.RoomsAir ();
                         break;
                     case ConsoleKey.D:
-                        ShipOutpostFix(shipJson);
+                        //ShipOutpostFix(shipJson);
+						//TODO: Write a new Outpost Fix
+						throw new NotImplementedException();
                         break;
                     case ConsoleKey.E:
                         Console.WriteLine("What would you like to rename your ship?");
                         string shipName = Console.ReadLine();
-                        ShipRename(shipJson, shipName);
+                        // ShipRename(shipJson, shipName);
+						selectedShip.Name = shipName;
                         break;
                     case ConsoleKey.F:
                         Console.WriteLine("What is the requested removal percentage?");
                         var removalPercentage = Convert.ToInt16(Console.ReadLine()) / 100.0;
-                        ShipRemoveBadComponents(shipJson, removalPercentage);
+                        // ShipRemoveBadComponents(shipJson, removalPercentage);
+						selectedShip.RemoveBadComponents(removalPercentage);
                         break;
                     case ConsoleKey.G:
-                        ShipDoorsUnlock(shipJson);
+                        // ShipDoorsUnlock(shipJson);
+						selectedShip.DoorsUnlock();
                         break;
-                    case ConsoleKey.H:
-                        ShipRepairPointsFix(shipJson);
+					case ConsoleKey.H:
+						// ShipRepairPointsFix (shipJson);
+						selectedShip.RepairPointsFix();
                         break;
                     case ConsoleKey.Q:
                         return;
@@ -258,27 +267,25 @@ namespace HellionSaveEditor
 
         private static void ListShips()
         {
-            Console.WriteLine();
-            Console.WriteLine("Please enter a filter to limit results.");
-            string shipFilter = Console.ReadLine();
+            ///Console.WriteLine();
+            ///Console.WriteLine("Please enter a filter to limit results.");
+            ///string shipFilter = Console.ReadLine();
 
-            //var ships = saveData["Ships"].Children<JObject>().Where(n => n["Name"].Value<string>() == shipFilter);
-
-            var ships = from s in saveData["Ships"]
-                        where s["Registration"].Value<string>().Contains(shipFilter) || s["Name"].Value<string>().Contains(shipFilter)
-                        select s;
+			var ships = Ships.GetShips (parentsOnly: true);
 
             foreach (var ship in ships)
             {
-                Console.WriteLine("{0} (aka {1})", ship["Registration"].Value<string>(), ship["Name"].Value<string>());
+                Console.WriteLine(ship);
             }
+
+			ConsoleColorLine (String.Format ("{0} ships found", ships.Count), ConsoleColor.Green);
         }
 
         /// <summary>
         /// Find a ship with a specific name and return it
         /// </summary>
         /// <returns></returns>
-        private static JObject GetShip()
+        private static Ship GetShip()
         {
             Console.WriteLine();
             Console.WriteLine("Please type the name of the ship to select");
@@ -286,10 +293,10 @@ namespace HellionSaveEditor
 
             Console.Write("Searching... ");
 
-            JObject ship = saveData["Ships"].Children<JObject>().Where(o => o["Registration"].Value<string>() == shipName || o["Name"].Value<string>() == shipName).FirstOrDefault(); //FirstOrDefault(o => o["Name"].ToString() == shipName);
+			var ship = Ships.GetShip (shipName);
             if (ship != null)
             {
-                ConsoleColorLine(string.Format("Ship Found! GUID: {0}", ship["GUID"].Value<string>()), ConsoleColor.DarkGreen);
+                ConsoleColorLine(string.Format("Ship Found! {0}", ship), ConsoleColor.DarkGreen);
             }
             else
             {
