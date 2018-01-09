@@ -45,54 +45,6 @@ namespace HellionSaveEditor
             }
         }
 
-        static void Main2(string[] args)
-        {
-            string saveFileName = null;
-            if (args.Length == 0)
-            {
-                // No arguments passed, look for most recent save in parent folder
-				saveFileName = LoadLastSave(Directory.GetParent(Directory.GetCurrentDirectory()).FullName);
-            }
-            else
-            {
-                // Check to see if we were passed a file or folder
-                bool isFile = !System.IO.Directory.Exists(args[0]) &&
-                         System.IO.File.Exists(args[0]);
-
-                // Act accordingly
-                if (isFile)
-                {
-                    LoadSave(args[0]);
-                    saveFileName = args[0];
-                }
-                else
-                {
-                    saveFileName = LoadLastSave(args[0]);
-                }
-            }
-            
-            if (saveFileName == null)
-            {
-                ConsoleColorLine("No save file found on the local system. Please ensure that you have this program in the correct directory.", ConsoleColor.Red);
-                Console.WriteLine("Please check the wiki for instructions. https://github.com/GLotsapot/HellionSaveEditor/wiki");
-                Console.ReadKey();
-                Environment.Exit(0);
-            }
-
-            MenuMain();
-
-            Console.WriteLine();
-            ConsoleColorLine("Would you like to save your changes? (y/n)", ConsoleColor.DarkGreen);
-            switch (Console.ReadKey().Key)
-            {
-                case ConsoleKey.Y:
-                    WriteSave(saveFileName);
-                    break;
-                default:
-                    break;
-            }
-        }
-
         /// <summary>
         /// Prints out a message to the console using pretty colors.
         /// </summary>
@@ -137,68 +89,6 @@ namespace HellionSaveEditor
             }
         }
 
-
-        #region File Functions
-
-        /// <summary>
-        /// Finds the *.save game with the most recent Date Modified.
-        /// This is usually the latest save game, but can be used to force a specific save to load instead
-        /// </summary>
-        /// <param name="savePath"></param>
-        /// <returns>The path fo find the save games</returns>
-        private static string LoadLastSave(string savePath)
-        {
-            var files = new System.IO.DirectoryInfo(savePath).GetFileSystemInfos("*.save").OrderBy(f => f.LastWriteTime);
-
-            if(files.Count() != 0)
-            {
-                LoadSave(files.Last().FullName);
-                return files.Last().FullName;
-            }
-            else
-            {
-                return null;
-            }
-            
-        }
-
-        /// <summary>
-        /// Opens the file specified and loads the JSon data to be manupulated
-        /// </summary>
-        /// <param name="saveFile">The save file to load data from</param>
-        private static void LoadSave(string saveFile)
-        {
-            Console.WriteLine("Reading save file: {0}", saveFile);
-            using (StreamReader file = File.OpenText(saveFile))
-            {
-                using (JsonTextReader reader = new JsonTextReader(file))
-                {
-                    saveData = (JObject)JToken.ReadFrom(reader);
-                }
-            }
-        }
-
-        /// <summary>
-        /// Renames the original file for backup, and saves the new file in it's place
-        /// </summary>
-        /// <param name="saveFile">The full save path and name to save data to<</param>
-        private static void WriteSave(string saveFile)
-        {
-            System.IO.File.Move(saveFile, saveFile + "-" + DateTime.Now.ToString("yyyyMdhmmsss") + ".backup");
-            using (StreamWriter sWriter = File.CreateText(saveFile))
-            {
-                using (JsonTextWriter jWriter = new JsonTextWriter(sWriter))
-                {
-                    jWriter.Formatting = Formatting.Indented;
-                    //jWriter.Indentation = 4;
-
-                    saveData.WriteTo(jWriter);
-                }
-            }
-
-        }
-
-        #endregion
 
         #region Character Functions
         
