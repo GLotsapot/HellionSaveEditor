@@ -56,7 +56,25 @@ namespace HellionData
 			}
 		}
 
-        public UInt64 DockedToShipGUID { get; set; }
+        public UInt64 DockedToShipGUID
+        {
+            get
+            {
+                if(ship["DockedToShipGUID"] != null)
+                {
+                    return ship["DockedToShipGUID"].Value<uint>();
+                }
+                else
+                {
+                    return 0;
+                }
+                
+            }
+            set
+            {
+                ship["DockedToShipGUID"] = value;
+            }
+        }
 
         #endregion
 
@@ -100,6 +118,7 @@ namespace HellionData
             var partObjects = ship["DynamicObjects"].Children<JObject>().Where(o => o["PartType"] != null);
             foreach (var po in partObjects)
             {
+                //HACK: I randomly just picked tier 4. I have no idea if this is even the max level, or even if this may cause problems.
                 po["Tier"] = 4;
             }
         }
@@ -124,7 +143,7 @@ namespace HellionData
 		{
             if (removalPercentage > 100)
             {
-                string message = String.Format("Removal percentage must be below 100% you psychopath. {0} is invalid", removalPercentage);
+                string message = String.Format("Removal percentage must be below 100% you psychopath. {0}% is just retarded.", removalPercentage);
                 throw new ArgumentException(message);
             }
 

@@ -116,5 +116,30 @@ namespace HellionData
         {
             throw new NotImplementedException();
         }
+
+        public static void OutpostFix(Ship parentShip)
+        {
+            parentShip.DynamicObjectsFix();
+            parentShip.RepairPointsFix();
+            parentShip.ResourceTanksFill();
+            parentShip.RoomsAirFill();
+
+            throw new NotImplementedException();
+        }
+
+        /// <summary>
+        /// Finds the top most parent ship in the tree of connected ships
+        /// </summary>
+        /// <param name="startingShip">The initial ship to start the search from</param>
+        /// <returns>The ship that the startingShip originated from</returns>
+        public static Ship FindMasterShip(Ship startingShip)
+        {
+            if(startingShip.DockedToShipGUID == 0)
+            {
+                return startingShip;
+            }
+
+            throw new NotImplementedException();
+        }
     }
 }

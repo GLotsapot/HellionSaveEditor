@@ -212,12 +212,13 @@ namespace HellionSaveEditor
                         ListShips();
                         break;
                     case ConsoleKey.D2:
-						selectedShip = GetShip(); //TODO: reference the ship to edit
+						selectedShip = GetShip();
                         break;
                     case ConsoleKey.D3:
-                        //TODO: remove all bad components
+                        Console.WriteLine("What is the requested removal percentage?");
+                        var systemRemovalPercentage = Convert.ToUInt16(Console.ReadLine());
                         //ShipRemoveBadComponents(25);
-                        Ships.RemoveAllBadComponents(25);
+                        Ships.RemoveAllBadComponents(systemRemovalPercentage);
                         break;
 					case ConsoleKey.A:
 						//ShipResourceTanksFill (shipJson);
@@ -225,16 +226,15 @@ namespace HellionSaveEditor
                         break;
 					case ConsoleKey.B:
 						//ShipDynamicObjectsFix(shipJson);
-						selectedShip.DynamicObjectsFix ();
+						selectedShip.DynamicObjectsFix();
                         break;
 					case ConsoleKey.C:
 						//ShipRoomsAir(shipJson);
-						selectedShip.RoomsAirFill ();
+						selectedShip.RoomsAirFill();
                         break;
                     case ConsoleKey.D:
                         //ShipOutpostFix(shipJson);
-						//TODO: Write a new Outpost Fix
-						throw new NotImplementedException();
+                        Ships.OutpostFix(selectedShip);
                         break;
                     case ConsoleKey.E:
                         Console.WriteLine("What would you like to rename your ship?");
@@ -244,32 +244,36 @@ namespace HellionSaveEditor
                         break;
                     case ConsoleKey.F:
                         Console.WriteLine("What is the requested removal percentage?");
-                        var removalPercentage = Convert.ToInt16(Console.ReadLine()) / 100.0;
+                        var shipRemovalPercentage = Convert.ToUInt16(Console.ReadLine());
                         // ShipRemoveBadComponents(shipJson, removalPercentage);
-						selectedShip.RemoveBadComponents(removalPercentage);
+						selectedShip.RemoveBadComponents(shipRemovalPercentage);
                         break;
                     case ConsoleKey.G:
                         // ShipDoorsUnlock(shipJson);
 						selectedShip.DoorsUnlock();
                         break;
 					case ConsoleKey.H:
-						// ShipRepairPointsFix (shipJson);
+						// ShipRepairPointsFix(shipJson);
 						selectedShip.RepairPointsFix();
                         break;
                     case ConsoleKey.Q:
                         return;
                     default:
-                        ConsoleColorLine(string.Format("The {0} key is not valid.", MenuResponse.Key), ConsoleColor.Red);
+                        ConsoleColorLine(String.Format("The {0} key is not valid.", MenuResponse.Key), ConsoleColor.Red);
                         break;
                 }
             }
         }
 
+        /// <summary>
+        /// List all the ships in the save file
+        /// </summary>
         private static void ListShips()
         {
             ///Console.WriteLine();
             ///Console.WriteLine("Please enter a filter to limit results.");
             ///string shipFilter = Console.ReadLine();
+            //TODO: Add the feature back to filter the ship list
 
 			var ships = Ships.GetShips();
 
@@ -287,6 +291,7 @@ namespace HellionSaveEditor
         /// <returns></returns>
         private static Ship GetShip()
         {
+            //TODO: Add the option to search by GUID
             Console.WriteLine();
             Console.WriteLine("Please type the name of the ship to select");
             string shipName = Console.ReadLine();
@@ -305,61 +310,7 @@ namespace HellionSaveEditor
             return ship;
         }
 
-        /// <summary>
-        /// Remove components from a ship if it's health is below a percentage
-        /// </summary>
-        /// <param name="ship">The ship reference you wish to fix items for</param>
-        /// <param name="removalPercentage">The decimal percentage barrier to remove</param>
-        private static void ShipRemoveBadComponents(JObject ship, double removalPercentage)
-        {
-            if (removalPercentage > 1)
-            {
-                ConsoleColorLine("Percentage cannot be above 100%", ConsoleColor.Red);
-                return;
-            }
-            else
-            {
-                Console.WriteLine("Removing parts with health lower than {0:P} from {1}", removalPercentage, ship["Name"]);
-            }
 
-            var partObjects = from po in ship["DynamicObjects"]
-                              where po["PartData"] != null
-                              select po;
-
-            
-            // NOTE: We have to do this in reverse, as doing it foward and removing causes an Exception
-            foreach (var po in partObjects.Reverse())
-            {
-                double partHealth = po["PartData"]["Health"].Value<double>() / po["PartData"]["MaxHealth"].Value<double>();
-                Console.WriteLine("- Part {0}: Health {1:P}", po["GUID"], partHealth);
-
-                if (partHealth < removalPercentage)
-                {
-                    Console.WriteLine("-- Removing Part");
-                    po.Remove();
-                }
-                else
-                {
-                    Console.WriteLine("-- Keeping Part");
-                }
-            }
-        }
-
-        /// <summary>
-        /// Remove components from all ships if it's health is below a percentage
-        /// </summary>
-        /// <param name="removalPercentage">The decimal percentage barrier to remove</param>
-        private static void ShipRemoveBadComponents(double removalPercentage)
-        {
-            Console.WriteLine("Removing parts with health lower than {0:P} from all ships", removalPercentage);
-
-            var ships = saveData["Ships"].Children<JObject>();
-
-            foreach (var ship in ships)
-            {
-                ShipRemoveBadComponents(ship, removalPercentage);
-            }
-        }
 
         /// <summary>
         /// Change the name of your ship
@@ -371,141 +322,6 @@ namespace HellionSaveEditor
             Console.WriteLine();
             Console.WriteLine("Renaming ship {0} to {1}", ship["Name"], shipName);
             ship["Name"] = shipName;
-        }
-
-        /// <summary>
-        /// This will fix the air pressure, air quality, parts, and resourcs tanks of all connected objects.
-        /// </summary>
-        /// <param name="parentShip">The parent ship that everything attaches to. Usually an Outpost.</param>
-        private static void ShipOutpostFix(JObject parentShip)
-        {
-            Console.WriteLine();
-            ConsoleColorLine(string.Format("-- Fixing Room {0} ({0}) --", parentShip["Registration"].Value<string>(), parentShip["Name"].Value<string>()), ConsoleColor.DarkGreen);
-            
-            ShipRoomsAir(parentShip);
-            ShipResourceTanksFill(parentShip);
-            ShipDynamicObjectsFix(parentShip);
-            ShipRepairPointsFix(parentShip);
-
-            // Get ships that are docked to this ship, and repeat
-            var childrenShips = saveData["Ships"].Children<JObject>().Where(o => o["DockedToShipGUID"] != null).Where(o => o["DockedToShipGUID"].Value<Int64>() == parentShip["GUID"].Value<Int64>());
-
-            foreach (JObject childShip in childrenShips) { ShipOutpostFix(childShip); }
-        }
-
-        /// <summary>
-        /// Goes through each Dynamic Objects that has PartData, and changes it's Health to match MaxHealth
-        /// </summary>
-        /// <param name="ship">The ship reference you wish to fix items for</param>
-        private static void ShipDynamicObjectsFix(JObject ship)
-        {
-            Console.WriteLine();
-            ConsoleColorLine("Fixing Dynamic Objects", ConsoleColor.DarkBlue);
-
-            var partObjects = from po in ship["DynamicObjects"]
-                              where po["PartData"] != null
-                              select po;
-
-            foreach (var po in partObjects)
-            {
-                Console.WriteLine("- GUID {0}: {1}", po["GUID"], po["PartData"]["Health"]);
-                if (po["PartData"]["Health"].Value<double>() != po["PartData"]["MaxHealth"].Value<double>())
-                {
-                    Console.WriteLine("-- Changing health to {0}", po["PartData"]["MaxHealth"]);
-                    po["PartData"]["Health"] = po["PartData"]["MaxHealth"];
-                }
-            }
-        }
-
-        /// <summary>
-        /// Fills each resource tank in the ship to it's max capacity
-        /// </summary>
-        /// <param name="ship">The ship reference you wish to fill</param>
-        private static void ShipResourceTanksFill(JObject ship)
-        {
-            Console.WriteLine();
-            ConsoleColorLine("Filling Resource Tanks", ConsoleColor.DarkBlue);
-
-            foreach (var resourceTank in ship["ResourceTanks"].Children<JObject>())
-            {
-                Console.WriteLine("- {0}: {1}", resourceTank["CargoCompartments"][0]["Name"], resourceTank["CargoCompartments"][0]["Resources"][0]["Quantity"]);
-
-                if(resourceTank["CargoCompartments"][0]["Resources"][0]["Quantity"].Value<double>() != resourceTank["CargoCompartments"][0]["Capacity"].Value<double>())
-                {
-                    var capacity = resourceTank["CargoCompartments"][0]["Capacity"];
-
-                    Console.WriteLine("-- Changing quantity to {0}", capacity);
-                    resourceTank["CargoCompartments"][0]["Resources"][0]["Quantity"] = capacity;
-                }
-            }
-        }
-
-        /// <summary>
-        /// Sets the pressure and quality of each room to 1.0
-        /// </summary>
-        /// <param name="ship">The ship reference you wish to fill</param>
-        private static void ShipRoomsAir(JObject ship)
-        {
-            Console.WriteLine();
-            ConsoleColorLine("Fixing Rooms Atmosphere", ConsoleColor.DarkBlue);
-
-            foreach (var room in ship["Rooms"].Children<JObject>())
-            {
-                Console.WriteLine("Changeing Room {0}", room["GUID"].Value<string>());
-                if(room["AirPressure"].Value<double>() != 1)
-                {
-                    Console.WriteLine("- AP changed from {0}", room["AirPressure"]);
-                    room["AirPressure"] = 1.0;
-                }
-
-                if (room["AirQuality"].Value<double>() != 1)
-                {
-                    Console.WriteLine("- AQ changed from {0}", room["AirQuality"]);
-                    room["AirQuality"] = 1.0;
-                }
-            }
-        }
-
-        /// <summary>
-        /// Sets all the doors on the ship to unlocked
-        /// </summary>
-        /// <param name="ship">The ship reference you wish to unlock doors on</param>
-        private static void ShipDoorsUnlock(JObject ship)
-        {
-            Console.WriteLine();
-            ConsoleColorLine("Unlocking doors", ConsoleColor.DarkBlue);
-            ConsoleColorLine(" - Currently not implemented", ConsoleColor.Red);
-            return;
-
-            foreach (var door in ship["Doors"].Children<JObject>().Where(o => o["IsLocked"].Value<bool>() == true))
-            {
-                Console.WriteLine("Unlocking door with skeleton key");
-                door["IsLocked"] = false;
-            }
-        }
-
-        /// <summary>
-        /// Goes through each Repair Point and changes it's Health to match MaxHealth
-        /// </summary>
-        /// <param name="ship">The ship reference you wish to unlock doors on</param>
-        private static void ShipRepairPointsFix(JObject ship)
-        {
-            Console.WriteLine();
-            ConsoleColorLine("Fixing Repair Points", ConsoleColor.DarkBlue);
-
-            var rpObjects = from rp in ship["RepairPoints"]
-                            select rp;
-
-            int totalHealth = 0;
-            foreach(var rp in rpObjects)
-            {
-                Console.WriteLine("- Changing {0} to {1}", rp["Health"], rp["MaxHealth"]);
-                rp["Health"] = rp["MaxHealth"];
-                totalHealth = totalHealth + rp["MaxHealth"].ToObject<int>();
-            }
-
-            ship["Health"] = totalHealth;
-            Console.WriteLine("-- Total ship health changed to {0}", totalHealth);
         }
 
         #endregion
