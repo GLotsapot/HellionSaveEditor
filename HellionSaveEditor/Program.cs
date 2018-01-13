@@ -217,7 +217,7 @@ namespace HellionSaveEditor
                     case ConsoleKey.D3:
                         //TODO: remove all bad components
                         //ShipRemoveBadComponents(25);
-                        ConsoleColorLine("not implemented", ConsoleColor.Red);
+                        Ships.RemoveAllBadComponents(25);
                         break;
 					case ConsoleKey.A:
 						//ShipResourceTanksFill (shipJson);
@@ -229,7 +229,7 @@ namespace HellionSaveEditor
                         break;
 					case ConsoleKey.C:
 						//ShipRoomsAir(shipJson);
-						selectedShip.RoomsAir ();
+						selectedShip.RoomsAirFill ();
                         break;
                     case ConsoleKey.D:
                         //ShipOutpostFix(shipJson);
@@ -271,7 +271,7 @@ namespace HellionSaveEditor
             ///Console.WriteLine("Please enter a filter to limit results.");
             ///string shipFilter = Console.ReadLine();
 
-			var ships = Ships.GetShips (parentsOnly: true);
+			var ships = Ships.GetShips();
 
             foreach (var ship in ships)
             {
@@ -293,7 +293,7 @@ namespace HellionSaveEditor
 
             Console.Write("Searching... ");
 
-			var ship = Ships.GetShip (shipName);
+			var ship = Ships.GetShip(shipName);
             if (ship != null)
             {
                 ConsoleColorLine(string.Format("Ship Found! {0}", ship), ConsoleColor.DarkGreen);

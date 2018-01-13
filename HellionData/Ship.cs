@@ -12,11 +12,17 @@ namespace HellionData
 
 		private JObject ship;
 
+        #region Constructors
+
         internal Ship(JObject shipData)
         {
 			this.ship = shipData;
         }
-			
+
+        #endregion
+
+        #region Properties
+
         public UInt64 GUID 
 		{ 
 			get 
@@ -52,44 +58,106 @@ namespace HellionData
 
         public UInt64 DockedToShipGUID { get; set; }
 
+        #endregion
+
+        #region Methods
+
         public override string ToString()
         {
 			return String.Format("[{0}] {1} - {2}", GUID, Registration, Name);
         }
 
-		public void ResourceTanksFill()
+        /// <summary>
+        /// Fills each resource tank in the ship to it's max capacity
+        /// </summary>
+        public void ResourceTanksFill()
 		{
-			throw new NotImplementedException ();
-		}
+            foreach (var resourceTank in ship["ResourceTanks"].Children<JObject>())
+            {
+                var capacity = resourceTank["CargoCompartments"][0]["Capacity"];
+                resourceTank["CargoCompartments"][0]["Resources"][0]["Quantity"] = capacity;
+            }
+        }
 
+        /// <summary>
+        /// Sets the health for all parts in the ship to 100
+        /// </summary>
 		public void DynamicObjectsFix()
 		{
-			throw new NotImplementedException ();
-		}
+            var partObjects = ship["DynamicObjects"].Children<JObject>().Where(o => o["PartType"] != null);
 
+            foreach (var po in partObjects)
+            {
+                po["Health"] = 100;
+            }
+        }
+
+        /// <summary>
+        /// Sets the tier for all parts in the ship to 4
+        /// </summary>
 		public void DynamicObjectsUpgrade()
 		{
-			throw new NotImplementedException ();
-		}
+            var partObjects = ship["DynamicObjects"].Children<JObject>().Where(o => o["PartType"] != null);
+            foreach (var po in partObjects)
+            {
+                po["Tier"] = 4;
+            }
+        }
 
-		public void RoomsAir()
-		{
-			throw new NotImplementedException ();
-		}
+        /// <summary>
+        /// Sets the pressure and quality of each room to 1.0
+        /// </summary>
+        public void RoomsAirFill()
+        {
+            foreach (var room in ship["Rooms"].Children<JObject>())
+            {
+                room["AirPressure"] = 1.0;
+                room["AirQuality"] = 1.0;
+            }
+        }
 
-		public void RemoveBadComponents(double removalPercentage)
+        /// <summary>
+        /// Remove components from a ship if it's health is below a percentage
+        /// </summary>
+        /// <param name="removalPercentage">The decimal percentage barrier to remove</param>
+        public void RemoveBadComponents(uint removalPercentage)
 		{
-			throw new NotImplementedException ();
-		}
+            if (removalPercentage > 100)
+            {
+                string message = String.Format("Removal percentage must be below 100% you psychopath. {0} is invalid", removalPercentage);
+                throw new ArgumentException(message);
+            }
+
+            var partObjects = ship["DynamicObjects"].Children<JObject>().Where(o => o["PartType"] != null);
+
+            // NOTE: We have to do this in reverse, as doing it foward and removing causes an Exception
+            foreach (var po in partObjects.Reverse())
+            {
+                if(po["Health"].Value<uint>() < removalPercentage) { po.Remove(); }
+            }
+        }
 
 		public void DoorsUnlock()
 		{
 			throw new NotImplementedException ();
 		}
 
-		public void RepairPointsFix()
+        /// <summary>
+        /// Goes through each Repair Point and changes it's Health to match MaxHealth
+        /// </summary>
+        public void RepairPointsFix()
 		{
-			throw new NotImplementedException ();
-		}
+            var rpObjects = ship["RepairPoints"].Children<JObject>();
+
+            int totalHealth = 0;
+            foreach (var rp in rpObjects)
+            {
+                rp["Health"] = rp["MaxHealth"];
+                totalHealth = totalHealth + rp["MaxHealth"].ToObject<int>();
+            }
+            ship["Health"] = totalHealth;
+        }
+
+        #endregion
     }
 }

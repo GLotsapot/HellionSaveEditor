@@ -12,12 +12,24 @@ namespace HellionData
     /// </summary>
     public static class Ships
     {
+        /// <summary>
+        /// Get a ship based upon it's GUID
+        /// </summary>
+        /// <param name="GUID"></param>
+        /// <returns>A ship if found, or null if not</returns>
         public static Ship GetShip(UInt64 GUID)
         {
             if (SaveFile.IsLoaded)
             {
-                JObject ship = SaveFile.saveData["Ships"].Children<JObject>().Where(o => o["GUID"].Value<string>() == GUID.ToString()).FirstOrDefault();
-                return new Ship(ship);
+                JObject ship = SaveFile.saveData["Ships"].Children<JObject>().Where(o => o["GUID"].Value<string>() == GUID.ToString()).First();
+                if (ship != null)
+                {
+                    return new Ship(ship);
+                }
+                else
+                {
+                    return null;
+                }
             }
             else
             {
@@ -26,12 +38,24 @@ namespace HellionData
             }
         }
 
+        /// <summary>
+        /// Get a ship based upon it's name or registration
+        /// </summary>
+        /// <param name="NameOrRegistration"></param>
+        /// <returns>A ship if found, or null if not</returns>
 		public static Ship GetShip(string NameOrRegistration)
 		{
 			if (SaveFile.IsLoaded)
 			{
-				JObject ship = SaveFile.saveData["Ships"].Children<JObject>().Where(o => o["Registration"].Value<string>() == NameOrRegistration || o["Name"].Value<string>() == NameOrRegistration).FirstOrDefault();
-				return new Ship(ship);
+                JObject ship = SaveFile.saveData["Ships"].Children<JObject>().Where(o => o["Registration"].Value<string>() == NameOrRegistration.ToUpper() || o["Name"].Value<string>() == NameOrRegistration.ToUpper()).FirstOrDefault();
+                if(ship != null)
+                {
+                    return new Ship(ship);
+                }
+                else
+                {
+                    return null;
+                }
 			}
 			else
 			{
@@ -45,7 +69,7 @@ namespace HellionData
         {
             if (SaveFile.IsLoaded)
             {
-                IEnumerable<JObject> shipChildren = SaveFile.saveData["Ships"].Children<JObject>().Where(o => o["DockedToShipGUID"].Value<string>() == parentShip.GUID.ToString());
+                IEnumerable<JObject> shipChildren = SaveFile.saveData["Ships"].Children<JObject>().Where(o => o["DockedToShipGUID"].Value<ulong>() == parentShip.GUID);
 
                 // TODO: Maybe thread this to improve retrieval?
                 // Loop through and return all ship objects. 
@@ -86,6 +110,11 @@ namespace HellionData
 			}
 
 			return ships;
+        }
+
+        public static void RemoveAllBadComponents(double removalPercentage)
+        {
+            throw new NotImplementedException();
         }
     }
 }
