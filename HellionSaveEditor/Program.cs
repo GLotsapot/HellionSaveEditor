@@ -94,7 +94,7 @@ namespace HellionSaveEditor
         
         private static void MenuCharacter()
         {
-            JObject characterJson = null;
+            Player selectedPlayer = null;
 
             while (true)
             {
@@ -103,9 +103,11 @@ namespace HellionSaveEditor
                 Console.WriteLine();
                 Console.WriteLine("1. List Character Names");
                 Console.WriteLine("2. Select My Character");
-                if(characterJson != null)
+                if(selectedPlayer != null)
                 {
                     Console.WriteLine("3. Fill Health");
+                    Console.WriteLine("4. Put on Space Suit");
+                    Console.WriteLine("5. Rename Character");
                 }
 
                 Console.WriteLine("Q. Quit.");
@@ -117,17 +119,16 @@ namespace HellionSaveEditor
                         CharacterList();
                         break;
                     case ConsoleKey.D2:
-                        characterJson = CharacterSelect();
+                        selectedPlayer = CharacterSelect();
                         break;
                     case ConsoleKey.D3:
-                        if(characterJson != null)
-                        {
-                            CharacterFillHealth(characterJson);
-                        }
-                        else
-                        {
-                            Console.WriteLine("Character has not been selected yet.");
-                        }
+                        CharacterFillHealth(selectedPlayer);
+                        break;
+                    case ConsoleKey.D4:
+                        throw new NotImplementedException();
+                        break;
+                    case ConsoleKey.D5:
+                        CharacterRename(selectedPlayer);
                         break;
                     case ConsoleKey.Q:
                         return;
@@ -138,17 +139,17 @@ namespace HellionSaveEditor
 
         private static void CharacterList()
         {
-            var characters = saveData["Players"].Children<JObject>();
+            var characters = Players.GetPlayers();
 
             Console.WriteLine();
             foreach (var character in characters)
             {
-                Console.WriteLine(character["Name"]);
+                Console.WriteLine(String.Format("[{0}] {1}", character.GUID, character.Name));
             }
 
         }
 
-        private static JObject CharacterSelect()
+        private static Player CharacterSelect()
         {
             Console.WriteLine();
             Console.WriteLine("Please type the name of the character to select");
@@ -156,7 +157,7 @@ namespace HellionSaveEditor
 
             Console.Write("Searching... ");
 
-            JObject player = saveData["Players"].Children<JObject>().FirstOrDefault(o => o["Name"].ToString() == characterName);
+            Player player = Players.GetPlayer(characterName); // saveData["Players"].Children<JObject>().FirstOrDefault(o => o["Name"].ToString() == characterName);
             if(player != null)
             {
                 ConsoleColorLine("Character Found!", ConsoleColor.DarkGreen);
@@ -168,12 +169,20 @@ namespace HellionSaveEditor
             return player;
         }
 
-        private static void CharacterFillHealth(JObject character)
+        private static void CharacterFillHealth(Player currentPlayer)
+        {
+            currentPlayer.FillHealth();
+            ConsoleColorLine("Character health filled", ConsoleColor.DarkGreen);
+        }
+
+        private static void CharacterRename(Player currentPlayer)
         {
             Console.WriteLine();
-            Console.WriteLine("Character health was at: {0}", character["HealthPoints"]);
-            character["HealthPoints"] = character["MaxHealthPoints"];
-            Console.WriteLine("Character health changed to: {0}", character["MaxHealthPoints"]);
+            Console.WriteLine("What would you like to rename this character?");
+            string characterName = Console.ReadLine();
+
+            currentPlayer.Name = characterName;
+            ConsoleColorLine("Character renames", ConsoleColor.DarkGreen);
         }
 
         #endregion
