@@ -123,7 +123,7 @@ namespace HellionSaveEditor
                         CharacterFillHealth(selectedPlayer);
                         break;
                     case ConsoleKey.D4:
-                        throw new NotImplementedException();
+                        CharacterSuitUp(selectedPlayer);
                         break;
                     case ConsoleKey.D5:
                         CharacterRename(selectedPlayer);
@@ -180,7 +180,15 @@ namespace HellionSaveEditor
             string characterName = Console.ReadLine();
 
             currentPlayer.Name = characterName;
-            ConsoleColorLine("Character renames", ConsoleColor.DarkGreen);
+            ConsoleColorLine("Character renamed", ConsoleColor.DarkGreen);
+        }
+
+        private static void CharacterSuitUp(Player currentPlayer)
+        {
+            Console.WriteLine();
+            currentPlayer.GiveSuit();
+
+            ConsoleColorLine("Character suited up.", ConsoleColor.DarkGreen);
         }
 
         #endregion

@@ -75,7 +75,8 @@ namespace HellionData
 
         public void GiveSuit()
         {
-            throw new NotImplementedException();
+            var errorMessage = "I have no idea how to generate a unique suit yet. I'm working on it though.";
+            throw new NotImplementedException(errorMessage);
         }
 
         public override string ToString()
