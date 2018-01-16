@@ -256,6 +256,9 @@ namespace HellionSaveEditor
 						// ShipRepairPointsFix(shipJson);
 						selectedShip.RepairPointsFix();
                         break;
+                    case ConsoleKey.O:
+                        Console.WriteLine("That's what she said, lol");
+                        break;
                     case ConsoleKey.Q:
                         return;
                     default:
