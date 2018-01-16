@@ -13,8 +13,6 @@ namespace HellionSaveEditor
 {
     class Program
     {
-        private static JObject saveData;
-
         static void Main(string[] args)
         {
             if (args.Length == 0)
@@ -157,7 +155,7 @@ namespace HellionSaveEditor
 
             Console.Write("Searching... ");
 
-            Player player = Players.GetPlayer(characterName); // saveData["Players"].Children<JObject>().FirstOrDefault(o => o["Name"].ToString() == characterName);
+            Player player = Players.GetPlayer(characterName);
             if(player != null)
             {
                 ConsoleColorLine("Character Found!", ConsoleColor.DarkGreen);
@@ -226,43 +224,34 @@ namespace HellionSaveEditor
                     case ConsoleKey.D3:
                         Console.WriteLine("What is the requested removal percentage?");
                         var systemRemovalPercentage = Convert.ToUInt16(Console.ReadLine());
-                        //ShipRemoveBadComponents(25);
                         Ships.RemoveAllBadComponents(systemRemovalPercentage);
                         break;
 					case ConsoleKey.A:
-						//ShipResourceTanksFill (shipJson);
 						selectedShip.ResourceTanksFill();
                         break;
 					case ConsoleKey.B:
-						//ShipDynamicObjectsFix(shipJson);
 						selectedShip.DynamicObjectsFix();
                         break;
 					case ConsoleKey.C:
-						//ShipRoomsAir(shipJson);
 						selectedShip.RoomsAirFill();
                         break;
                     case ConsoleKey.D:
-                        //ShipOutpostFix(shipJson);
                         Ships.OutpostFix(selectedShip);
                         break;
                     case ConsoleKey.E:
                         Console.WriteLine("What would you like to rename your ship?");
                         string shipName = Console.ReadLine();
-                        // ShipRename(shipJson, shipName);
 						selectedShip.Name = shipName;
                         break;
                     case ConsoleKey.F:
                         Console.WriteLine("What is the requested removal percentage?");
                         var shipRemovalPercentage = Convert.ToUInt16(Console.ReadLine());
-                        // ShipRemoveBadComponents(shipJson, removalPercentage);
 						selectedShip.RemoveBadComponents(shipRemovalPercentage);
                         break;
                     case ConsoleKey.G:
-                        // ShipDoorsUnlock(shipJson);
 						selectedShip.DoorsUnlock();
                         break;
 					case ConsoleKey.H:
-						// ShipRepairPointsFix(shipJson);
 						selectedShip.RepairPointsFix();
                         break;
                     case ConsoleKey.O:
