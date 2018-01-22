@@ -65,11 +65,16 @@ namespace HellionData
 
 		}
 
+        /// <summary>
+        /// Get a list of ships that are docked to the parentShip
+        /// </summary>
+        /// <param name="parentShip"></param>
+        /// <returns></returns>
         public static List<Ship> GetShipChildren(Ship parentShip)
         {
             if (SaveFile.IsLoaded)
             {
-                IEnumerable<JObject> shipChildren = SaveFile.saveData["Ships"].Children<JObject>().Where(o => o["DockedToShipGUID"].Value<ulong>() == parentShip.GUID);
+                IEnumerable<JObject> shipChildren = SaveFile.saveData["Ships"].Children<JObject>().Where(o => o["DockedToShipGUID"] != null).Where(o => o["DockedToShipGUID"].Value<ulong>() == parentShip.GUID);
 
                 // TODO: Maybe thread this to improve retrieval?
                 // Loop through and return all ship objects. 
@@ -88,6 +93,11 @@ namespace HellionData
             }
         }
 
+        /// <summary>
+        /// Gets all ships from the save. Optionally, just get a list of ships that don't have parent ships
+        /// </summary>
+        /// <param name="parentsOnly">If you would like to get ships that aren't docked to another ship</param>
+        /// <returns></returns>
         public static List<Ship> GetShips(Boolean parentsOnly = false)
         {
             if (!SaveFile.IsLoaded)
@@ -112,19 +122,45 @@ namespace HellionData
 			return ships;
         }
 
-        public static void RemoveAllBadComponents(double removalPercentage)
+        /// <summary>
+        /// Removes bad components from ALL ships
+        /// </summary>
+        /// <param name="removalPercentage"></param>
+        public static void RemoveAllBadComponents(uint removalPercentage)
         {
-            throw new NotImplementedException();
+            var ships = Ships.GetShips();
+            foreach (Ship ship in ships)
+            {
+                ship.RemoveBadComponents(removalPercentage);
+            }
         }
 
+        /// <summary>
+        /// Fixes all systems on the ship (Objects, Repair points, ResourceTanks, Air)
+        /// </summary>
+        /// <param name="ship">The ship to fix</param>
+        public static void ShipFix(Ship ship)
+        {
+            //TODO: Move this to Ship class where it belongs
+            ship.DynamicObjectsFix();
+            ship.RepairPointsFix();
+            ship.ResourceTanksFill();
+            ship.RoomsAirFill();
+        }
+
+        /// <summary>
+        /// Fix the parentShip, and every ship in the tree below it recursivly
+        /// </summary>
+        /// <param name="parentShip">The top most ship to start with</param>
         public static void OutpostFix(Ship parentShip)
         {
-            parentShip.DynamicObjectsFix();
-            parentShip.RepairPointsFix();
-            parentShip.ResourceTanksFill();
-            parentShip.RoomsAirFill();
+            ShipFix(parentShip);
 
-            throw new NotImplementedException();
+            var children = Ships.GetShipChildren(parentShip);
+            foreach (Ship ship in children)
+            {
+                Ships.OutpostFix(ship);
+            }
         }
 
         /// <summary>
@@ -134,12 +170,13 @@ namespace HellionData
         /// <returns>The ship that the startingShip originated from</returns>
         public static Ship FindMasterShip(Ship startingShip)
         {
-            if(startingShip.DockedToShipGUID == 0)
+            Ship currentShip = startingShip;
+            while (currentShip.DockedToShipGUID != 0)
             {
-                return startingShip;
+                currentShip = currentShip.GetParentShip();
             }
 
-            throw new NotImplementedException();
+            return currentShip;
         }
     }
 }

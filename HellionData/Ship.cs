@@ -62,7 +62,7 @@ namespace HellionData
             {
                 if(ship["DockedToShipGUID"] != null)
                 {
-                    return ship["DockedToShipGUID"].Value<uint>();
+                    return ship["DockedToShipGUID"].Value<UInt64>();
                 }
                 else
                 {
@@ -175,6 +175,23 @@ namespace HellionData
                 totalHealth = totalHealth + rp["MaxHealth"].ToObject<int>();
             }
             ship["Health"] = totalHealth;
+        }
+
+        /// <summary>
+        /// Return a ship that this ship is docked to
+        /// </summary>
+        /// <returns>The parent Ship object, or null if no parent is found</returns>
+        public Ship GetParentShip()
+        {
+            //TODO: Move this to Ships class where it belongs
+            if(this.DockedToShipGUID!= 0)
+            {
+                return Ships.GetShip(this.DockedToShipGUID);
+            }
+            else
+            {
+                return null;
+            }            
         }
 
         #endregion
