@@ -111,27 +111,32 @@ namespace HellionSaveEditor
                 Console.WriteLine("Q. Quit.");
                 var MenuResponse = Console.ReadKey(true);
 
-                switch (MenuResponse.Key)
-                {
-                    case ConsoleKey.D1:
-                        CharacterList();
-                        break;
-                    case ConsoleKey.D2:
-                        selectedPlayer = CharacterSelect();
-                        break;
-                    case ConsoleKey.D3:
-                        CharacterFillHealth(selectedPlayer);
-                        break;
-                    case ConsoleKey.D4:
-                        CharacterSuitUp(selectedPlayer);
-                        break;
-                    case ConsoleKey.D5:
-                        CharacterRename(selectedPlayer);
-                        break;
-                    case ConsoleKey.Q:
-                        return;
+				try {
+	                switch (MenuResponse.Key)
+	                {
+	                    case ConsoleKey.D1:
+	                        CharacterList();
+	                        break;
+	                    case ConsoleKey.D2:
+	                        selectedPlayer = CharacterSelect();
+	                        break;
+	                    case ConsoleKey.D3:
+	                        CharacterFillHealth(selectedPlayer);
+	                        break;
+	                    case ConsoleKey.D4:
+	                        CharacterSuitUp(selectedPlayer);
+	                        break;
+	                    case ConsoleKey.D5:
+	                        CharacterRename(selectedPlayer);
+	                        break;
+	                    case ConsoleKey.Q:
+	                        return;
 
-                }
+	                }
+				} catch (Exception ex) {
+					ConsoleColorLine ("Oh no! There was an error trying to do that. Please provide the below error, as well what you were trying to do to the developers through either the STEAM forum, or (preferably) through GitHub bugs", ConsoleColor.Yellow, ConsoleColor.Red);
+					Console.WriteLine (ex);
+				}
             }
         }
 
@@ -222,60 +227,66 @@ namespace HellionSaveEditor
                 Console.WriteLine("Q. Quit.");
                 var MenuResponse = Console.ReadKey(true);
 
-                switch (MenuResponse.Key)
-                {
-                    case ConsoleKey.D1:
-                        ListShips();
-                        break;
-                    case ConsoleKey.D2:
-						selectedShip = GetShip();
-                        break;
-                    case ConsoleKey.D3:
-                        Console.WriteLine("What is the requested removal percentage?");
-                        var systemRemovalPercentage = Convert.ToUInt16(Console.ReadLine());
-                        Ships.RemoveAllBadComponents(systemRemovalPercentage);
-                        break;
-					case ConsoleKey.A:
-						selectedShip.ResourceTanksFill();
-                        break;
-					case ConsoleKey.B:
-						selectedShip.DynamicObjectsFix();
-                        break;
-					case ConsoleKey.C:
-						selectedShip.RoomsAirFill();
-                        break;
-                    case ConsoleKey.D:
-                        Ships.OutpostFix(selectedShip);
-                        break;
-                    case ConsoleKey.E:
-                        Console.WriteLine("What would you like to rename your ship?");
-                        string shipName = Console.ReadLine();
-						selectedShip.Name = shipName;
-                        break;
-                    case ConsoleKey.F:
-                        Console.WriteLine("What is the requested removal percentage?");
-                        var shipRemovalPercentage = Convert.ToUInt16(Console.ReadLine());
-						selectedShip.RemoveBadComponents(shipRemovalPercentage);
-                        break;
-                    case ConsoleKey.G:
-						selectedShip.DoorsUnlock();
-                        break;
-					case ConsoleKey.H:
-						selectedShip.RepairPointsFix();
-                        break;
-                    case ConsoleKey.I:
-                        selectedShip = Ships.FindMasterShip(selectedShip);
-                        ConsoleColorLine(String.Format("Ship Found! {0}", selectedShip), ConsoleColor.DarkGreen);
-                        break;
-                    case ConsoleKey.O:
-                        Console.WriteLine("That's what she said, lol");
-                        break;
-                    case ConsoleKey.Q:
-                        return;
-                    default:
-                        ConsoleColorLine(String.Format("The {0} key is not valid.", MenuResponse.Key), ConsoleColor.Red);
-                        break;
-                }
+				try {
+					
+	                switch (MenuResponse.Key)
+	                {
+	                    case ConsoleKey.D1:
+	                        ListShips();
+	                        break;
+	                    case ConsoleKey.D2:
+							selectedShip = GetShip();
+	                        break;
+	                    case ConsoleKey.D3:
+	                        Console.WriteLine("What is the requested removal percentage?");
+	                        var systemRemovalPercentage = Convert.ToUInt16(Console.ReadLine());
+	                        Ships.RemoveAllBadComponents(systemRemovalPercentage);
+	                        break;
+						case ConsoleKey.A:
+							selectedShip.ResourceTanksFill();
+	                        break;
+						case ConsoleKey.B:
+							selectedShip.DynamicObjectsFix();
+	                        break;
+						case ConsoleKey.C:
+							selectedShip.RoomsAirFill();
+	                        break;
+	                    case ConsoleKey.D:
+	                        Ships.OutpostFix(selectedShip);
+	                        break;
+	                    case ConsoleKey.E:
+	                        Console.WriteLine("What would you like to rename your ship?");
+	                        string shipName = Console.ReadLine();
+							selectedShip.Name = shipName;
+	                        break;
+	                    case ConsoleKey.F:
+	                        Console.WriteLine("What is the requested removal percentage?");
+	                        var shipRemovalPercentage = Convert.ToUInt16(Console.ReadLine());
+							selectedShip.RemoveBadComponents(shipRemovalPercentage);
+	                        break;
+	                    case ConsoleKey.G:
+							selectedShip.DoorsUnlock();
+	                        break;
+						case ConsoleKey.H:
+							selectedShip.RepairPointsFix();
+	                        break;
+	                    case ConsoleKey.I:
+	                        selectedShip = Ships.FindMasterShip(selectedShip);
+	                        ConsoleColorLine(String.Format("Ship Found! {0}", selectedShip), ConsoleColor.DarkGreen);
+	                        break;
+	                    case ConsoleKey.O:
+	                        Console.WriteLine("That's what she said, lol");
+	                        break;
+	                    case ConsoleKey.Q:
+	                        return;
+	                    default:
+	                        ConsoleColorLine(String.Format("The {0} key is not valid.", MenuResponse.Key), ConsoleColor.Red);
+	                        break;
+	                }
+				} catch (Exception ex) {
+					ConsoleColorLine ("Oh no! There was an error trying to do that. Please provide the below error, as well what you were trying to do to the developers through either the STEAM forum, or (preferably) through GitHub bugs", ConsoleColor.Yellow, ConsoleColor.Red);
+					Console.WriteLine (ex);
+				}
             }
         }
 
