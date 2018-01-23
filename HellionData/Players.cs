@@ -17,11 +17,11 @@ namespace HellionData
         /// </summary>
         /// <param name="GUID"></param>
         /// <returns></returns>
-        public static Player GetPlayer(UInt64 GUID)
+        public static Player GetPlayer(Int64 GUID)
         {
             if (SaveFile.IsLoaded)
             {
-                JObject player = SaveFile.saveData["Players"].Children<JObject>().Where(o => o["GUID"].Value<UInt64>() == GUID).FirstOrDefault();
+                JObject player = SaveFile.saveData["Players"].Children<JObject>().Where(o => o["GUID"].Value<Int64>() == GUID).FirstOrDefault();
                 if (player != null)
                 {
                     return new Player(player);

@@ -9,26 +9,44 @@ namespace HellionData
 {
     public class Player
     {
+		#region Fields
+
         private JObject player;
+
+		#endregion
+
+		#region Constructors
 
         internal Player(JObject playerData)
         {
             this.player = playerData;
         }
 
-        public UInt64 GUID
+		#endregion
+
+		#region Properties
+
+		/// <summary>
+		/// Gets or sets the GUID of the character
+		/// </summary>
+		/// <value>The unique GUID assigned by the server</value>
+        public Int64 GUID
         {
             get
             {
-                return player["GUID"].Value<UInt64>();
+                return player["GUID"].Value<Int64>();
             }
 
-            private set
+			internal set
             {
                 player["GUID"] = value;
             }
         }
 
+		/// <summary>
+		/// Gets or sets the name of the character
+		/// </summary>
+		/// <value>The characters name.</value>
         public String Name
         {
             get
@@ -42,11 +60,15 @@ namespace HellionData
             }
         }
 
-        public UInt64 SteamId
+		/// <summary>
+		/// Gets or sets the steam identifier linked to the character
+		/// </summary>
+		/// <value>The Steam64 ID</value>
+        public Int64 SteamId
         {
             get
             {
-                return player["SteamId"].Value<UInt64>();
+                return player["SteamId"].Value<Int64>();
             }
 
             set
@@ -55,6 +77,10 @@ namespace HellionData
             }
         }
 
+		/// <summary>
+		/// Gets or sets a value indicating whether this character is alive.
+		/// </summary>
+		/// <value><c>true</c> if this character is alive; otherwise, <c>false</c>.</value>
         public Boolean IsAlive
         {
             get
@@ -68,11 +94,38 @@ namespace HellionData
             }
         }
 
+		/// <summary>
+		/// Gets or sets the characters health points.
+		/// </summary>
+		/// <value>The health points.</value>
+		public Int32 HealthPoints
+		{
+			get
+			{
+				return player["HealthPoints"].Value<Int32>();
+			}
+
+			set
+			{
+				player["HealthPoints"] = value;
+			}
+		}
+
+		#endregion
+
+		#region Methods
+
+		/// <summary>
+		/// Fills the health of the player
+		/// </summary>
         public void FillHealth()
         {
-            player["HealthPoints"] = player["MaxHealthPoints"];
+			HealthPoints = player["MaxHealthPoints"].Value<Int32>();
         }
 
+		/// <summary>
+		/// Gives the character a complete Mk9 suit if they aren't wearing one already
+		/// </summary>
         public void GiveSuit()
         {
             var errorMessage = "I have no idea how to generate a unique suit yet. I'm working on it though.";
@@ -83,5 +136,7 @@ namespace HellionData
         {
             return String.Format("[{0}] {1} - {2}", GUID, Name, SteamId);
         }
+
+		#endregion
     }
 }

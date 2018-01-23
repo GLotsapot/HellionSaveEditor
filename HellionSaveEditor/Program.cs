@@ -15,16 +15,24 @@ namespace HellionSaveEditor
     {
         static void Main(string[] args)
         {
-            if (args.Length == 0)
-            {
-                // No arguments passed, look for most recent save in parent folder
-                SaveFile.LoadLatestSaveFile(Directory.GetParent(Directory.GetCurrentDirectory()).FullName);
-            }
-            else
-            {
-                SaveFile.LoadSaveFile(args[0]);
-            }
-            Console.WriteLine("Loaded save file: {0}", SaveFile.FilePath);
+			try {
+				if (args.Length == 0)
+				{
+					// No arguments passed, look for most recent save in parent folder
+					SaveFile.LoadLatestSaveFile(Directory.GetParent(Directory.GetCurrentDirectory()).FullName);
+				}
+				else
+				{
+					SaveFile.LoadSaveFile(args[0]);
+				}
+				Console.WriteLine("Loaded save file: {0}", SaveFile.FilePath);
+				
+			} catch (Exception ex) {
+				ConsoleColorLine ("Oh no! There was an error trying to load a save file! Cannot continue.", ConsoleColor.Yellow, ConsoleColor.Red);
+				Console.WriteLine (ex);
+				return;
+			}
+            
 
             MenuMain();
 
@@ -134,7 +142,7 @@ namespace HellionSaveEditor
 
 	                }
 				} catch (Exception ex) {
-					ConsoleColorLine ("Oh no! There was an error trying to do that. Please provide the below error, as well what you were trying to do to the developers through either the STEAM forum, or (preferably) through GitHub bugs", ConsoleColor.Yellow, ConsoleColor.Red);
+					ConsoleColorLine ("Oh no! There was an error trying to do that. Please provide the below error, as well what you were trying to do to the developers through either the STEAM forum, or (preferably) through GitHub bugs", ConsoleColor.Red);
 					Console.WriteLine (ex);
 				}
             }
@@ -155,12 +163,20 @@ namespace HellionSaveEditor
         private static Player CharacterSelect()
         {
             Console.WriteLine();
-            Console.WriteLine("Please type the name of the character to select");
-            string characterName = Console.ReadLine();
+			Console.WriteLine("Please type the GUID of the character to select");
+			long characterGUID;
+			try
+			{
+				characterGUID = Int64.Parse(Console.ReadLine());
+			}
+			catch (Exception ex)
+			{
+				var newEx = new InvalidCastException("The player GUID you tried to search was not a number. Seach failed.", ex);
+				throw newEx;
+			}
 
-            Console.Write("Searching... ");
 
-            Player player = Players.GetPlayer(characterName);
+			Player player = Players.GetPlayer(characterGUID);
             if(player != null)
             {
                 ConsoleColorLine("Character Found!", ConsoleColor.DarkGreen);
@@ -174,6 +190,7 @@ namespace HellionSaveEditor
 
         private static void CharacterFillHealth(Player currentPlayer)
         {
+			Console.WriteLine("Health is currently: {0}", currentPlayer.HealthPoints);
             currentPlayer.FillHealth();
             ConsoleColorLine("Character health filled", ConsoleColor.DarkGreen);
         }
