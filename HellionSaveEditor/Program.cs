@@ -234,12 +234,13 @@ namespace HellionSaveEditor
                     Console.WriteLine("A. Fill Resources");
                     Console.WriteLine("B. Fix Parts");
                     Console.WriteLine("C. Fix Room Air");
-                    Console.WriteLine("D. Fix Ship and Children (runs A,B,C,H on the current ship, and all it's recursive children");
+                    Console.WriteLine("D. Fix Ship and Children (runs A,B,C,H,J on the current ship, and all it's recursive children");
                     Console.WriteLine("E. Rename Ship");
                     Console.WriteLine("F. Remove bad components");
                     Console.WriteLine("G. Unlock doors");
                     Console.WriteLine("H. Fix Repair Points");
                     Console.WriteLine("I. Select Master Ship (Top most parent ship in the Outpost");
+                    Console.WriteLine("J. Upgrade Part Tier");
                 }
                 Console.WriteLine("Q. Quit.");
                 var MenuResponse = Console.ReadKey(true);
@@ -291,6 +292,9 @@ namespace HellionSaveEditor
 	                        selectedShip = Ships.FindMasterShip(selectedShip);
 	                        ConsoleColorLine(String.Format("Ship Found! {0}", selectedShip), ConsoleColor.DarkGreen);
 	                        break;
+                        case ConsoleKey.J:
+                            selectedShip.DynamicObjectsUpgrade();
+                            break;
 	                    case ConsoleKey.O:
 	                        Console.WriteLine("That's what she said, lol");
 	                        break;

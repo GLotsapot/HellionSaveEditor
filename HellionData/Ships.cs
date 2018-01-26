@@ -143,6 +143,7 @@ namespace HellionData
         {
             //TODO: Move this to Ship class where it belongs
             ship.DynamicObjectsFix();
+            ship.DynamicObjectsUpgrade();
             ship.RepairPointsFix();
             ship.ResourceTanksFill();
             ship.RoomsAirFill();
