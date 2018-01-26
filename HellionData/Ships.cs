@@ -17,11 +17,11 @@ namespace HellionData
         /// </summary>
         /// <param name="GUID"></param>
         /// <returns>A ship if found, or null if not</returns>
-        public static Ship GetShip(UInt64 GUID)
+        public static Ship GetShip(Int64 GUID)
         {
             if (SaveFile.IsLoaded)
             {
-                JObject ship = SaveFile.saveData["Ships"].Children<JObject>().Where(o => o["GUID"].Value<string>() == GUID.ToString()).First();
+                JObject ship = SaveFile.saveData["Ships"].Children<JObject>().Where(o => o["GUID"].Value<Int64>() == GUID).First();
                 if (ship != null)
                 {
                     return new Ship(ship);
@@ -74,7 +74,7 @@ namespace HellionData
         {
             if (SaveFile.IsLoaded)
             {
-                IEnumerable<JObject> shipChildren = SaveFile.saveData["Ships"].Children<JObject>().Where(o => o["DockedToShipGUID"] != null).Where(o => o["DockedToShipGUID"].Value<ulong>() == parentShip.GUID);
+                IEnumerable<JObject> shipChildren = SaveFile.saveData["Ships"].Children<JObject>().Where(o => o["DockedToShipGUID"] != null).Where(o => o["DockedToShipGUID"].Value<Int64>() == parentShip.GUID);
 
                 // TODO: Maybe thread this to improve retrieval?
                 // Loop through and return all ship objects. 

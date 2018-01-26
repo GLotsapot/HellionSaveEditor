@@ -335,12 +335,22 @@ namespace HellionSaveEditor
         {
             //TODO: Add the option to search by GUID
             Console.WriteLine();
-            Console.WriteLine("Please type the name of the ship to select");
-            string shipName = Console.ReadLine();
+            Console.WriteLine("Please type the GUID of the ship to select");
+
+            long shipGUID;
+            try
+            {
+                shipGUID = Int64.Parse(Console.ReadLine());
+            }
+            catch (Exception ex)
+            {
+                var newEx = new InvalidCastException("The Ship GUID you tried to search was not a number. Search failed.", ex);
+                throw newEx;
+            }
 
             Console.Write("Searching... ");
 
-			var ship = Ships.GetShip(shipName);
+            var ship = Ships.GetShip(shipGUID);
             if (ship != null)
             {
                 ConsoleColorLine(string.Format("Ship Found! {0}", ship), ConsoleColor.DarkGreen);

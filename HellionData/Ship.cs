@@ -23,11 +23,11 @@ namespace HellionData
 
         #region Properties
 
-        public UInt64 GUID 
+        public Int64 GUID 
 		{ 
 			get 
 			{
-				return ship["GUID"].Value<UInt64>();
+				return ship["GUID"].Value<Int64>();
 			}
 
 			private set
@@ -56,13 +56,13 @@ namespace HellionData
 			}
 		}
 
-        public UInt64 DockedToShipGUID
+        public Int64 DockedToShipGUID
         {
             get
             {
                 if(ship["DockedToShipGUID"] != null)
                 {
-                    return ship["DockedToShipGUID"].Value<UInt64>();
+                    return ship["DockedToShipGUID"].Value<Int64>();
                 }
                 else
                 {
