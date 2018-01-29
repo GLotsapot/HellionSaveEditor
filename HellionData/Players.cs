@@ -21,7 +21,10 @@ namespace HellionData
         {
             if (SaveFile.IsLoaded)
             {
-                JObject player = SaveFile.saveData["Players"].Children<JObject>().Where(o => o["GUID"].Value<Int64>() == GUID).FirstOrDefault();
+                JObject player = SaveFile.saveData["Players"]
+                    .Children<JObject>()
+                    .Where(o => o["GUID"].Value<Int64>() == GUID).FirstOrDefault();
+
                 if (player != null)
                 {
                     return new Player(player);
@@ -47,7 +50,10 @@ namespace HellionData
         {
             if (SaveFile.IsLoaded)
             {
-                JObject player = SaveFile.saveData["Players"].Children<JObject>().Where(o => o["Name"].Value<String>() == Name).FirstOrDefault();
+                JObject player = SaveFile.saveData["Players"]
+                    .Children<JObject>()
+                    .Where(o => o["Name"].Value<String>() == Name).FirstOrDefault();
+
                 if (player != null)
                 {
                     return new Player(player);

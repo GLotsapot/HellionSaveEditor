@@ -21,7 +21,11 @@ namespace HellionData
         {
             if (SaveFile.IsLoaded)
             {
-                JObject ship = SaveFile.saveData["Ships"].Children<JObject>().Where(o => o["GUID"].Value<Int64>() == GUID).First();
+                JObject ship = SaveFile.saveData["Ships"]
+                    .Children<JObject>()
+                    .Where(o => o["GUID"].Value<Int64>() == GUID)
+                    .First();
+
                 if (ship != null)
                 {
                     return new Ship(ship);
@@ -47,7 +51,11 @@ namespace HellionData
 		{
 			if (SaveFile.IsLoaded)
 			{
-                JObject ship = SaveFile.saveData["Ships"].Children<JObject>().Where(o => o["Registration"].Value<string>() == NameOrRegistration.ToUpper() || o["Name"].Value<string>() == NameOrRegistration.ToUpper()).FirstOrDefault();
+                JObject ship = SaveFile.saveData["Ships"]
+                    .Children<JObject>()
+                    .Where(o => o["Registration"].Value<string>() == NameOrRegistration.ToUpper() || o["Name"].Value<string>() == NameOrRegistration.ToUpper())
+                    .FirstOrDefault();
+
                 if(ship != null)
                 {
                     return new Ship(ship);
@@ -74,7 +82,10 @@ namespace HellionData
         {
             if (SaveFile.IsLoaded)
             {
-                IEnumerable<JObject> shipChildren = SaveFile.saveData["Ships"].Children<JObject>().Where(o => o["DockedToShipGUID"] != null).Where(o => o["DockedToShipGUID"].Value<Int64>() == parentShip.GUID);
+                IEnumerable<JObject> shipChildren = SaveFile.saveData["Ships"]
+                    .Children<JObject>()
+                    .Where(o => o["DockedToShipGUID"] != null)
+                    .Where(o => o["DockedToShipGUID"].Value<Int64>() == parentShip.GUID);
 
                 // TODO: Maybe thread this to improve retrieval?
                 // Loop through and return all ship objects. 
@@ -108,9 +119,13 @@ namespace HellionData
 
 			IEnumerable<JObject> shipsJson;
 			if (!parentsOnly) {
-				shipsJson = SaveFile.saveData["Ships"].Children<JObject>();
-			} else {
-				shipsJson = SaveFile.saveData["Ships"].Children<JObject>().Where(o => o["DockedToShipGUID"] != null);
+				shipsJson = SaveFile.saveData["Ships"]
+                    .Children<JObject>();
+			}
+            else {
+				shipsJson = SaveFile.saveData["Ships"]
+                    .Children<JObject>()
+                    .Where(o => o["DockedToShipGUID"] != null);
 			}
 
 			List<Ship> ships = new List<Ship>();

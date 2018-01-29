@@ -119,6 +119,7 @@ namespace HellionData
             foreach (var po in partObjects)
             {
                 //HACK: I randomly just picked tier 4. I have no idea if this is even the max level, or even if this may cause problems.
+                //TODO: Use DynamicObjects.json to figure it out correctly?
                 po["Tier"] = 4;
             }
         }
