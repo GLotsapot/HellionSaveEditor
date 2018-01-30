@@ -1,9 +1,11 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 14
-VisualStudioVersion = 14.0.25420.1
+# Visual Studio 15
+VisualStudioVersion = 15.0.27130.2010
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HellionSaveEditor", "HellionSaveEditor.csproj", "{30D0AE60-12E2-4FED-804E-880ECBD3344C}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HellionSaveEditor", "HellionSaveEditor\HellionSaveEditor.csproj", "{30D0AE60-12E2-4FED-804E-880ECBD3344C}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HellionData", "HellionData\HellionData.csproj", "{94175714-E8F4-4979-BC69-FDAE8199E92D}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -15,8 +17,26 @@ Global
 		{30D0AE60-12E2-4FED-804E-880ECBD3344C}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{30D0AE60-12E2-4FED-804E-880ECBD3344C}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{30D0AE60-12E2-4FED-804E-880ECBD3344C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{94175714-E8F4-4979-BC69-FDAE8199E92D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{94175714-E8F4-4979-BC69-FDAE8199E92D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{94175714-E8F4-4979-BC69-FDAE8199E92D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{94175714-E8F4-4979-BC69-FDAE8199E92D}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {6E629263-C07D-4E2E-8A81-1A649DAE8E7F}
+	EndGlobalSection
+	GlobalSection(MonoDevelopProperties) = preSolution
+		Policies = $0
+		$0.DotNetNamingPolicy = $1
+		$1.DirectoryNamespaceAssociation = None
+		$1.ResourceNamePolicy = FileFormatDefault
+		$0.StandardHeader = $2
+		$2.Text = 
+		$2.IncludeInNewFiles = True
+		$0.VersionControlPolicy = $3
+		$3.inheritsSet = Mono
 	EndGlobalSection
 EndGlobal
